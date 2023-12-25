@@ -1,6 +1,6 @@
 # SwiftyDMG
 
-![GitHub License](https://img.shields.io/github/license/chocoford/SwiftyDMG) ![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/dove_zachary?label=Chocoford)
+![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/dove_zachary?label=Chocoford) ![GitHub License](https://img.shields.io/github/license/chocoford/SwiftyDMG)
 
 A tool help you create DMG for your app, with many customizable options.
 
