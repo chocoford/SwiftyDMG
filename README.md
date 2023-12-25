@@ -12,7 +12,7 @@ A tool help you create DMG for your app, with many customizable options.
 Install with [Homebrew](https://brew.sh/)
 
 ```shell
-brew install swifty-dmg
+brew install chocoford/repo/swifty-dmg
 ```
 
 ## Usage
