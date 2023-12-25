@@ -18,7 +18,14 @@ brew install swifty-dmg
 ## Usage
 
 ```shell
-swifty-dmg ...
+USAGE: create-dmg <app-url> [--verbose]
+
+ARGUMENTS:
+  <app-url>               The url of your app.
+
+OPTIONS:
+  --verbose               Print progress updates when creating dmg.
+  -h, --help              Show help information.
 ```
 
 ## Roadmap
