@@ -19,19 +19,67 @@ struct CreateDMGError: LocalizedError {
 
 @main
 struct CreateDMG: AsyncParsableCommand {
+    static var configuration: CommandConfiguration = CommandConfiguration(abstract: "A tool help you create dmg for your app.")
+
     @Argument(help: "The url of your app.")
     var appURL: String
+    
+    @Option(name: [.customLong("output"), .customShort("o")], help: "The destination of the dmg.")
+    var destination: String?
+    
+    @Option(name: [.customLong("background"), .customShort("b")], help: "The background image of the dmg.")
+    var backgroundURLString: String?
+    
+    
+    @Flag(name: [.customLong("noBackground")], help: "Remove the background of the dmg.")
+    var noBackground: Bool = false
+    
+    @Flag(help: "Skip codesign for the dmg.")
+    var skipCodesign: Bool = false
     
     @Flag(help: "Print progress updates when creating dmg.")
     var verbose: Bool = false
     
-    var progress: String = ""
 
     mutating func run() async throws {
         guard let url = URL(string: "file://\(appURL)") else { throw CreateDMGError(message: "Invalid url") }
+        
+        
+        let desURL: URL?
+        if let destination = destination {
+            desURL = URL(string: "file://\(destination)")
+        } else {
+            desURL = nil
+        }
+        
+        let bgURL: AppDMG.DMGBackgroundOption
+        if noBackground {
+            bgURL = .skip
+        } else if let bgURLString = backgroundURLString {
+            guard let url = URL(string: "file://\(bgURLString)") else {
+                throw CreateDMGError(message: "Invalid background image url")
+            }
+            bgURL = .manually(url)
+        } else {
+            bgURL = .default
+        }
+        
+        let codesignOption: AppDMG.CodesignOption
+        if skipCodesign {
+            codesignOption = .skip
+        } else {
+            codesignOption = .auto
+        }
+        
+        
         try await withThrowingTaskGroup(of: Void.self) { [verbose] taskGroup in
             taskGroup.addTask {
-                let url = try await AppDMG.default.createDMG(url: url) { progress in
+                let url = try await AppDMG.default.createDMG(
+                    url: url,
+                    to: desURL,
+                    backgroundImage: bgURL,
+                    codesign: codesignOption
+                ) { progress in
                     if verbose {
                         print("\r", terminator: "")
                         print(progress.description)
@@ -59,6 +107,5 @@ struct CreateDMG: AsyncParsableCommand {
             try await taskGroup.next()
             taskGroup.cancelAll()
         }
-   
     }
 }
