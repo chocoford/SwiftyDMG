@@ -31,10 +31,10 @@ struct CreateDMG: AsyncParsableCommand {
     var backgroundURLString: String?
     
     
-    @Flag(name: [.customLong("noBackground")], help: "Remove the background of the dmg.")
+    @Flag(name: [.customLong("nobackground"), .customLong("nobg")], help: "Remove the background of the dmg.")
     var noBackground: Bool = false
     
-    @Flag(help: "Skip codesign for the dmg.")
+    @Flag(name: .customLong("skipcodesign"), help: "Skip codesign for the dmg.")
     var skipCodesign: Bool = false
     
     @Flag(help: "Print progress updates when creating dmg.")

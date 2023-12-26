@@ -20,7 +20,7 @@ brew install chocoford/repo/swifty-dmg
 ```shell
 OVERVIEW: A tool help you create dmg for your app.
 
-USAGE: create-dmg <app-url> [--output <output>] [--background <background>] [--noBackground] [--skip-codesign] [--verbose]
+USAGE: create-dmg <app-url> [--output <output>] [--background <background>] [--nobackground] [--skipcodesign] [--verbose]
 
 ARGUMENTS:
   <app-url>               The url of your app.
@@ -29,8 +29,8 @@ OPTIONS:
   -o, --output <output>   The destination of the dmg.
   -b, --background <background>
                           The background image of the dmg.
-  --noBackground          Remove the background of the dmg.
-  --skip-codesign         Skip codesign for the dmg.
+  --nobackground, --nobg  Remove the background of the dmg.
+  --skipcodesign          Skip codesign for the dmg.
   --verbose               Print progress updates when creating dmg.
   -h, --help              Show help information.
 ```
