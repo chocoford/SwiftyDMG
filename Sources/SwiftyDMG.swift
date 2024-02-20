@@ -40,14 +40,21 @@ struct CreateDMG: AsyncParsableCommand {
     @Flag(help: "Print progress updates when creating dmg.")
     var verbose: Bool = false
     
+    
+    private func buildPath(_ urlString: String) -> String {
+        let currentPath = FileManager.default.currentDirectoryPath
+        let urlString = urlString.hasPrefix("/") ? urlString : currentPath + "/" + urlString
+        
+        return urlString
+    }
 
     mutating func run() async throws {
-        guard let url = URL(string: "file://\(appURL)") else { throw CreateDMGError(message: "Invalid url") }
+        guard let url = URL(string: "file://\(buildPath(appURL))") else { throw CreateDMGError(message: "Invalid url") }
         
         
         let desURL: URL?
         if let destination = destination {
-            desURL = URL(string: "file://\(destination)")
+            desURL = URL(string: "file://\(buildPath(destination))")
         } else {
             desURL = nil
         }
@@ -56,7 +63,7 @@ struct CreateDMG: AsyncParsableCommand {
         if noBackground {
             bgURL = .skip
         } else if let bgURLString = backgroundURLString {
-            guard let url = URL(string: "file://\(bgURLString)") else {
+            guard let url = URL(string: "file://\(buildPath(bgURLString))") else {
                 throw CreateDMGError(message: "Invalid background image url")
             }
             bgURL = .manually(url)
