@@ -1,0 +1,8 @@
+// Shared by the native app's Debug and Release configurations.
+MARKETING_VERSION = 2.0.0
+CURRENT_PROJECT_VERSION = 20000
+
+// $() prevents xcconfig from interpreting the HTTPS slashes as a comment.
+SPARKLE_FEED_URL = https:/$()/github.com/chocoford/SwiftyDMG/releases/latest/download/appcast.xml
+// Add only the public Ed25519 key when configuring the first signed release.
+SPARKLE_PUBLIC_ED_KEY =

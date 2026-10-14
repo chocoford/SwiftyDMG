@@ -1,0 +1,581 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 90;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		39A9DF12307FE726004704F3 /* Packager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF03307FE726004704F3 /* Packager.swift */; };
+		39A9DF13307FE726004704F3 /* PackagingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF04307FE726004704F3 /* PackagingOptions.swift */; };
+		39A9DF14307FE726004704F3 /* ProcessExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF05307FE726004704F3 /* ProcessExecutor.swift */; };
+		39A9DF15307FE726004704F3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF0A307FE726004704F3 /* ContentView.swift */; };
+		39A9DF16307FE726004704F3 /* LayoutPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF0D307FE726004704F3 /* LayoutPreview.swift */; };
+		39A9DF17307FE726004704F3 /* PackagingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF0E307FE726004704F3 /* PackagingModel.swift */; };
+		39A9DF18307FE726004704F3 /* SwiftyDMGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */; };
+		39A9DF19307FE726004704F3 /* UpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF10307FE726004704F3 /* UpdateController.swift */; };
+		39A9DF1A307FE726004704F3 /* dmg-background.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 39A9DF07307FE726004704F3 /* dmg-background.tiff */; };
+		39A9DF1B307FE726004704F3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 39A9DF09307FE726004704F3 /* Assets.xcassets */; };
+		A10000000000000000000002 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000012 /* Sparkle */; };
+		B10000000000000000000031 /* AppDMG in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000021 /* AppDMG */; };
+		B10000000000000000000032 /* hdiutil in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000022 /* hdiutil */; };
+		B10000000000000000000033 /* DSStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000023 /* DSStoreKit */; };
+		B10000000000000000000041 /* AppDMG in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000021 /* AppDMG */; };
+		B10000000000000000000042 /* hdiutil in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000022 /* hdiutil */; };
+		B10000000000000000000043 /* DSStoreKit in Frameworks */ = {isa = PBXBuildFile; productRef = B10000000000000000000023 /* DSStoreKit */; };
+		B20000000000000000000021 /* SwiftyDMG/Packaging/PackagingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SwiftyDMG/Packaging/PackagingOptions.swift */; };
+		B20000000000000000000022 /* SwiftyDMG/Packaging/ProcessExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* SwiftyDMG/Packaging/ProcessExecutor.swift */; };
+		B20000000000000000000023 /* SwiftyDMG/Packaging/Packager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		000000000000000000000120 /* SwiftyDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftyDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		39A9DF03307FE726004704F3 /* Packager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packager.swift; sourceTree = "<group>"; };
+		39A9DF04307FE726004704F3 /* PackagingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingOptions.swift; sourceTree = "<group>"; };
+		39A9DF05307FE726004704F3 /* ProcessExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessExecutor.swift; sourceTree = "<group>"; };
+		39A9DF07307FE726004704F3 /* dmg-background.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "dmg-background.tiff"; sourceTree = "<group>"; };
+		39A9DF09307FE726004704F3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		39A9DF0A307FE726004704F3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		39A9DF0B307FE726004704F3 /* Debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Debug.entitlements; sourceTree = "<group>"; };
+		39A9DF0C307FE726004704F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		39A9DF0D307FE726004704F3 /* LayoutPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutPreview.swift; sourceTree = "<group>"; };
+		39A9DF0E307FE726004704F3 /* PackagingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingModel.swift; sourceTree = "<group>"; };
+		39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMGApp.swift; sourceTree = "<group>"; };
+		39A9DF10307FE726004704F3 /* UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateController.swift; sourceTree = "<group>"; };
+		A10000000000000000000041 /* Configuration/Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Release.xcconfig; sourceTree = "<group>"; };
+		B20000000000000000000002 /* SwiftyDMGTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftyDMGTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000000000000000000011 /* SwiftyDMG/Packaging/PackagingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/PackagingOptions.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000012 /* SwiftyDMG/Packaging/ProcessExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/ProcessExecutor.swift; sourceTree = SOURCE_ROOT; };
+		B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/Packager.swift; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B20000000000000000000003 /* SwiftyDMGTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SwiftyDMGTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000130000000 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				A10000000000000000000002 /* Sparkle in Frameworks */,
+				B10000000000000000000031 /* AppDMG in Frameworks */,
+				B10000000000000000000032 /* hdiutil in Frameworks */,
+				B10000000000000000000033 /* DSStoreKit in Frameworks */,
+			);
+		};
+		B20000000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				B10000000000000000000041 /* AppDMG in Frameworks */,
+				B10000000000000000000042 /* hdiutil in Frameworks */,
+				B10000000000000000000043 /* DSStoreKit in Frameworks */,
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		000000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				39A9DF11307FE726004704F3 /* SwiftyDMG */,
+				000000000000000000000020 /* Products */,
+				A10000000000000000000041 /* Configuration/Release.xcconfig */,
+				B20000000000000000000003 /* SwiftyDMGTests */,
+				B20000000000000000000008 /* Packaging Test Sources */,
+			);
+			sourceTree = "<group>";
+		};
+		000000000000000000000020 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000120 /* SwiftyDMG.app */,
+				B20000000000000000000002 /* SwiftyDMGTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		39A9DF06307FE726004704F3 /* Packaging */ = {
+			isa = PBXGroup;
+			children = (
+				39A9DF03307FE726004704F3 /* Packager.swift */,
+				39A9DF04307FE726004704F3 /* PackagingOptions.swift */,
+				39A9DF05307FE726004704F3 /* ProcessExecutor.swift */,
+			);
+			path = Packaging;
+			sourceTree = "<group>";
+		};
+		39A9DF08307FE726004704F3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				39A9DF07307FE726004704F3 /* dmg-background.tiff */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		39A9DF11307FE726004704F3 /* SwiftyDMG */ = {
+			isa = PBXGroup;
+			children = (
+				39A9DF0C307FE726004704F3 /* Info.plist */,
+				39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */,
+				39A9DF0A307FE726004704F3 /* ContentView.swift */,
+				39A9DF0D307FE726004704F3 /* LayoutPreview.swift */,
+				39A9DF0E307FE726004704F3 /* PackagingModel.swift */,
+				39A9DF10307FE726004704F3 /* UpdateController.swift */,
+				39A9DF06307FE726004704F3 /* Packaging */,
+				39A9DF08307FE726004704F3 /* Resources */,
+				39A9DF09307FE726004704F3 /* Assets.xcassets */,
+				39A9DF0B307FE726004704F3 /* Debug.entitlements */,
+			);
+			path = SwiftyDMG;
+			sourceTree = "<group>";
+		};
+		B20000000000000000000008 /* Packaging Test Sources */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000011 /* SwiftyDMG/Packaging/PackagingOptions.swift */,
+				B20000000000000000000012 /* SwiftyDMG/Packaging/ProcessExecutor.swift */,
+				B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */,
+			);
+			name = "Packaging Test Sources";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		000000000000000100000000 /* SwiftyDMG */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000110000000 /* Build configuration list for PBXNativeTarget "SwiftyDMG" */;
+			buildPhases = (
+				000000000000000120000000 /* Sources */,
+				000000000000000130000000 /* Frameworks */,
+				000000000000000140000000 /* Resources */,
+			);
+			buildRules = (
+			);
+			name = SwiftyDMG;
+			packageProductDependencies = (
+				A10000000000000000000012 /* Sparkle */,
+				B10000000000000000000021 /* AppDMG */,
+				B10000000000000000000022 /* hdiutil */,
+				B10000000000000000000023 /* DSStoreKit */,
+			);
+			productName = SwiftyDMG;
+			productReference = 000000000000000000000120 /* SwiftyDMG.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B20000000000000000000001 /* SwiftyDMGTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B20000000000000000000007 /* Build configuration list for PBXNativeTarget "SwiftyDMGTests" */;
+			buildPhases = (
+				B20000000000000000000004 /* Sources */,
+				B20000000000000000000005 /* Frameworks */,
+				B20000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				B20000000000000000000003 /* SwiftyDMGTests */,
+			);
+			name = SwiftyDMGTests;
+			packageProductDependencies = (
+				B10000000000000000000021 /* AppDMG */,
+				B10000000000000000000022 /* hdiutil */,
+				B10000000000000000000023 /* DSStoreKit */,
+			);
+			productName = SwiftyDMGTests;
+			productReference = B20000000000000000000002 /* SwiftyDMGTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		000000000000000000000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					000000000000000100000000 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					B20000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+				};
+			};
+			buildConfigurationList = 000000000000000010000000 /* Build configuration list for PBXProject "SwiftyDMG" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 000000000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A10000000000000000000032 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				B10000000000000000000011 /* XCLocalSwiftPackageReference "../AppDMG" */,
+				B10000000000000000000012 /* XCLocalSwiftPackageReference "../hdiutil" */,
+				B10000000000000000000013 /* XCLocalSwiftPackageReference "../DSStoreKit" */,
+			);
+			preferredProjectObjectVersion = 90;
+			productRefGroup = 000000000000000000000020 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				000000000000000100000000 /* SwiftyDMG */,
+				B20000000000000000000001 /* SwiftyDMGTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		000000000000000140000000 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				39A9DF1A307FE726004704F3 /* dmg-background.tiff in Resources */,
+				39A9DF1B307FE726004704F3 /* Assets.xcassets in Resources */,
+			);
+		};
+		B20000000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		000000000000000120000000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				39A9DF12307FE726004704F3 /* Packager.swift in Sources */,
+				39A9DF13307FE726004704F3 /* PackagingOptions.swift in Sources */,
+				39A9DF14307FE726004704F3 /* ProcessExecutor.swift in Sources */,
+				39A9DF15307FE726004704F3 /* ContentView.swift in Sources */,
+				39A9DF16307FE726004704F3 /* LayoutPreview.swift in Sources */,
+				39A9DF17307FE726004704F3 /* PackagingModel.swift in Sources */,
+				39A9DF18307FE726004704F3 /* SwiftyDMGApp.swift in Sources */,
+				39A9DF19307FE726004704F3 /* UpdateController.swift in Sources */,
+			);
+		};
+		B20000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				B20000000000000000000021 /* SwiftyDMG/Packaging/PackagingOptions.swift in Sources */,
+				B20000000000000000000022 /* SwiftyDMG/Packaging/ProcessExecutor.swift in Sources */,
+				B20000000000000000000023 /* SwiftyDMG/Packaging/Packager.swift in Sources */,
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		000000000000000011000000 /* Debug configuration for PBXProject "SwiftyDMG" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PROJECT_UNIQUE_VALUE = ADDZ8TDW;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		000000000000000012000000 /* Release configuration for PBXProject "SwiftyDMG" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PROJECT_UNIQUE_VALUE = ADDZ8TDW;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		000000000000000111000000 /* Debug configuration for PBXNativeTarget "SwiftyDMG" */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A10000000000000000000041 /* Configuration/Release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SwiftyDMG/Debug.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3XKM749Y3L;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SwiftyDMG/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMG;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		000000000000000112000000 /* Release configuration for PBXNativeTarget "SwiftyDMG" */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A10000000000000000000041 /* Configuration/Release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3XKM749Y3L;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SwiftyDMG/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMG;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B20000000000000000000031 /* Debug configuration for PBXNativeTarget "SwiftyDMGTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMGTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		B20000000000000000000032 /* Release configuration for PBXNativeTarget "SwiftyDMGTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMGTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		000000000000000010000000 /* Build configuration list for PBXProject "SwiftyDMG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000011000000 /* Debug configuration for PBXProject "SwiftyDMG" */,
+				000000000000000012000000 /* Release configuration for PBXProject "SwiftyDMG" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		000000000000000110000000 /* Build configuration list for PBXNativeTarget "SwiftyDMG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000111000000 /* Debug configuration for PBXNativeTarget "SwiftyDMG" */,
+				000000000000000112000000 /* Release configuration for PBXNativeTarget "SwiftyDMG" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		B20000000000000000000007 /* Build configuration list for PBXNativeTarget "SwiftyDMGTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B20000000000000000000031 /* Debug configuration for PBXNativeTarget "SwiftyDMGTests" */,
+				B20000000000000000000032 /* Release configuration for PBXNativeTarget "SwiftyDMGTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B10000000000000000000011 /* XCLocalSwiftPackageReference "../AppDMG" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../AppDMG;
+		};
+		B10000000000000000000012 /* XCLocalSwiftPackageReference "../hdiutil" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../hdiutil;
+		};
+		B10000000000000000000013 /* XCLocalSwiftPackageReference "../DSStoreKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../DSStoreKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A10000000000000000000032 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000012 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000000000000000000032 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+		B10000000000000000000021 /* AppDMG */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppDMG;
+		};
+		B10000000000000000000022 /* hdiutil */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = hdiutil;
+		};
+		B10000000000000000000023 /* DSStoreKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DSStoreKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 000000000000000000000000 /* Project object */;
+}
