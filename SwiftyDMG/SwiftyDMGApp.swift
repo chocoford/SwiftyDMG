@@ -6,25 +6,16 @@ struct SwiftyDMGApp: App {
     @NSApplicationDelegateAdaptor(ApplicationDelegate.self) private var delegate
 
     var body: some Scene {
-        Window("SwiftyDMG", id: "main") {
-            ContentView(model: delegate.model, delegate: delegate)
+        DocumentGroup(newDocument: WorkspaceDocument()) { configuration in
+            WorkspaceDocumentView(document: configuration.$document, fileURL: configuration.fileURL, delegate: delegate)
         }
         .defaultSize(width: 400, height: 300)
         .commands {
-            CommandGroup(replacing: .newItem) {
-                Button("选择 App…", action: delegate.chooseApp)
-                    .keyboardShortcut("o")
-                    .disabled(delegate.model.isBuilding)
-            }
+            WorkspaceCommands(delegate: delegate)
             CommandGroup(after: .appInfo) {
                 CheckForUpdatesView(updates: delegate.updates)
             }
-            CommandMenu("打包配置") {
-                Button("导入配置…", action: delegate.model.importPreset).disabled(delegate.model.isBuilding)
-                Button("导出配置…", action: delegate.model.exportPreset)
-                Divider()
-                Button("恢复默认设置") { delegate.model.options = .init() }.disabled(delegate.model.isBuilding)
-            }
+            SidebarCommands()
         }
         Settings {
             UpdateSettingsView(updates: delegate.updates)
@@ -34,29 +25,58 @@ struct SwiftyDMGApp: App {
 
 @MainActor
 final class ApplicationDelegate: NSObject, NSApplicationDelegate {
-    let model = PackagingModel()
     let updates = UpdateController()
-    var reopenMainWindow: (() -> Void)?
-    private(set) weak var mainWindow: NSWindow?
+    private var createDocument: ((WorkspaceState) -> Void)?
+    private var pendingApps: [URL] = []
+    private var sessions: [ObjectIdentifier: WorkspaceSession] = [:]
 
-    func registerMainWindow(_ window: NSWindow) {
-        mainWindow = window
+    func registerWorkspace(_ model: PackagingModel, window: NSWindow) {
+        let id = ObjectIdentifier(window)
+        if sessions[id]?.model === model { return }
+        sessions = sessions.filter { $0.value.model != nil }
+        sessions[id] = WorkspaceSession(model: model, window: window)
+        Task { @MainActor [weak self] in self?.drainPendingApps() }
     }
 
-    func showMainWindow() {
-        if let mainWindow {
-            if mainWindow.isMiniaturized { mainWindow.deminiaturize(nil) }
-            mainWindow.makeKeyAndOrderFront(nil)
+    func connectDocumentCreation(_ action: @escaping (WorkspaceState) -> Void) {
+        createDocument = action
+        drainPendingApps()
+    }
+
+    func newWorkspaceFromApp() {
+        let panel = NSOpenPanel()
+        panel.title = String(localized: "New Workspace from App")
+        panel.allowedContentTypes = [.applicationBundle]
+        panel.canChooseDirectories = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        createWorkspace(for: url, reuseEmptyWindow: false)
+    }
+
+    private func createWorkspace(for url: URL, reuseEmptyWindow: Bool) {
+        let candidate = PackagingModel()
+        guard candidate.selectApp(url) else {
+            NSApp.presentError(PackagingError.invalid(candidate.errorMessage ?? String(localized: "Unable to open this app.")))
+            return
+        }
+        if reuseEmptyWindow,
+           let session = sessions.values.first(where: {
+               $0.window?.isVisible == true && $0.model?.sourceURL == nil && $0.model?.isBuilding == false
+           }), let model = session.model, let window = session.window {
+            model.selectApp(url)
+            window.makeKeyAndOrderFront(nil)
+        } else if let createDocument {
+            createDocument(candidate.workspace)
         } else {
-            // Only ask SwiftUI to open the scene if its window has been closed.
-            reopenMainWindow?()
+            pendingApps.append(url)
         }
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    func chooseApp() {
-        showMainWindow()
-        model.chooseApp()
+    private func drainPendingApps() {
+        guard createDocument != nil, !sessions.isEmpty, !pendingApps.isEmpty else { return }
+        let urls = pendingApps
+        pendingApps.removeAll()
+        for url in urls { createWorkspace(for: url, reuseEmptyWindow: true) }
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -64,13 +84,26 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
         NSUpdateDynamicServices()
     }
 
-    func application(_ application: NSApplication, open urls: [URL]) {
-        receive(urls)
-    }
+    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool { true }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        showMainWindow()
+        guard !flag else { return true }
+        NSDocumentController.shared.newDocument(nil)
         return false
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            if url.pathExtension.lowercased() == "app" {
+                createWorkspace(for: url, reuseEmptyWindow: true)
+            } else {
+                NSDocumentController.shared.openDocument(withContentsOf: url, display: true) { _, _, error in
+                    if let error {
+                        Task { @MainActor in NSApp.presentError(error) }
+                    }
+                }
+            }
+        }
     }
 
     @objc func createDMG(_ pasteboard: NSPasteboard, userData: String?, error: AutoreleasingUnsafeMutablePointer<NSString?>) {
@@ -79,29 +112,42 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
             urls = paths.map { URL(fileURLWithPath: $0) }
         }
         guard urls.count == 1, urls[0].pathExtension.lowercased() == "app" else {
-            error.pointee = "请在 Finder 中选择一个 .app。"
+            error.pointee = String(localized: "Select one .app in Finder.") as NSString
             return
         }
-        guard !model.isBuilding else {
-            error.pointee = "SwiftyDMG 正在打包，请完成当前任务后重试。"
-            return
-        }
-        receive(urls)
-    }
-
-    private func receive(_ urls: [URL]) {
-        guard let url = urls.first, !model.isBuilding else { return }
-        model.selectApp(url)
-        showMainWindow()
+        createWorkspace(for: urls[0], reuseEmptyWindow: true)
     }
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        guard model.isBuilding else { return .terminateNow }
-        let alert = NSAlert()
-        alert.messageText = "正在创建 DMG"
-        alert.informativeText = "请等待当前打包完成后退出，以便安全卸载临时镜像。"
-        alert.addButton(withTitle: "继续打包")
-        alert.runModal()
-        return .terminateCancel
+        if sessions.values.contains(where: { $0.model?.isBuilding == true }) {
+            let alert = NSAlert()
+            alert.messageText = String(localized: "Creating DMG")
+            alert.informativeText = String(localized: "Wait for the current build to finish before quitting so temporary disk images can be safely unmounted.")
+            alert.addButton(withTitle: String(localized: "Continue Building"))
+            alert.runModal()
+            return .terminateCancel
+        }
+        let controller = NSDocumentController.shared
+        guard controller.hasEditedDocuments else { return .terminateNow }
+        Task { @MainActor in
+            controller.reviewUnsavedDocuments(withAlertTitle: nil, cancellable: true, delegate: self,
+                didReviewAllSelector: #selector(finishedReviewingDocuments(_:didReviewAll:contextInfo:)), contextInfo: nil)
+        }
+        return .terminateLater
+    }
+
+    @objc private func finishedReviewingDocuments(_ controller: NSDocumentController, didReviewAll: Bool, contextInfo: UnsafeMutableRawPointer?) {
+        NSApp.reply(toApplicationShouldTerminate: didReviewAll)
+    }
+}
+
+@MainActor
+private final class WorkspaceSession {
+    weak var model: PackagingModel?
+    weak var window: NSWindow?
+
+    init(model: PackagingModel, window: NSWindow) {
+        self.model = model
+        self.window = window
     }
 }

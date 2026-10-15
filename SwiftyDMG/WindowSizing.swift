@@ -3,6 +3,8 @@ import SwiftUI
 
 /// Keeps the launch and editor stages in the same native window.
 struct WindowSizing: NSViewRepresentable {
+    static let editorContentSize = NSSize(width: 1280, height: 780)
+
     let isEditing: Bool
     let reduceMotion: Bool
     let resolve: (NSWindow) -> Void
@@ -10,12 +12,18 @@ struct WindowSizing: NSViewRepresentable {
 
     func makeNSView(context: Context) -> SizingView {
         let view = SizingView()
-        view.configure(isEditing: isEditing, reduceMotion: reduceMotion, resolve: resolve, onResizeComplete: onResizeComplete)
+        configure(view)
         return view
     }
 
     func updateNSView(_ view: SizingView, context: Context) {
-        view.configure(isEditing: isEditing, reduceMotion: reduceMotion, resolve: resolve, onResizeComplete: onResizeComplete)
+        configure(view)
+    }
+
+    @MainActor
+    private func configure(_ view: SizingView) {
+        view.configure(isEditing: isEditing, reduceMotion: reduceMotion,
+                       resolve: resolve, onResizeComplete: onResizeComplete)
     }
 
     final class SizingView: NSView {
@@ -25,7 +33,8 @@ struct WindowSizing: NSViewRepresentable {
         private var resolve: ((NSWindow) -> Void)?
         private var onResizeComplete: ((Bool) -> Void)?
 
-        func configure(isEditing: Bool, reduceMotion: Bool, resolve: @escaping (NSWindow) -> Void, onResizeComplete: @escaping (Bool) -> Void) {
+        func configure(isEditing: Bool, reduceMotion: Bool, resolve: @escaping (NSWindow) -> Void,
+                       onResizeComplete: @escaping (Bool) -> Void) {
             self.isEditing = isEditing
             self.reduceMotion = reduceMotion
             self.resolve = resolve
@@ -46,9 +55,9 @@ struct WindowSizing: NSViewRepresentable {
             appliedStage = isEditing
             if firstAppearance { window.styleMask.insert(.fullSizeContentView) }
             applyWindowChrome(window)
-            let preferred = isEditing ? NSSize(width: 1120, height: 740) : NSSize(width: 400, height: 300)
+            let preferred = isEditing ? WindowSizing.editorContentSize : NSSize(width: 400, height: 300)
             let available = window.screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
-            let minimum = isEditing ? NSSize(width: 900, height: 560) : NSSize(width: 400, height: 300)
+            let minimum = isEditing ? NSSize(width: 1080, height: 600) : NSSize(width: 400, height: 300)
             // Raising the minimum before expanding can force an immediate resize.
             // Apply the editor's minimum once the animated expansion has completed.
             if firstAppearance || !isEditing {
@@ -73,8 +82,8 @@ struct WindowSizing: NSViewRepresentable {
                 Task { @MainActor in
                     guard let self, let window, self.appliedStage == stage else { return }
                     window.contentMinSize = NSSize(width: min(minimum.width, available.width), height: min(minimum.height, available.height))
-                    // Mounting the editor earlier lets its inspector force the window
-                    // to its minimum size before the native frame animation can run.
+                    // Mount the editor after expansion so its initial layout
+                    // cannot interrupt the native frame animation.
                     self.onResizeComplete?(stage)
                 }
             }

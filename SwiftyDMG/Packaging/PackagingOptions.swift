@@ -44,24 +44,28 @@ struct PackagingOptions: Codable, Equatable, Sendable {
     func validate() throws {
         guard windowWidth.isFinite, windowHeight.isFinite,
               (320...4096).contains(windowWidth), (240...4096).contains(windowHeight) else {
-            throw PackagingError.invalid("窗口宽度须为 320–4096，高度须为 240–4096。")
+            throw PackagingError.invalid(String(localized: "Window width must be 320–4096 and height must be 240–4096."))
         }
         try validatePosition(x: appX, y: appY, name: "App")
         if includeApplications {
             try validatePosition(x: applicationsX, y: applicationsY, name: "Applications")
         }
-        for (mode, url, name) in [(background, backgroundURL, "背景图片"), (diskIcon, diskIconURL, "磁盘图标")] {
+        let assets = [
+            (background, backgroundURL, String(localized: "Select a valid background image.")),
+            (diskIcon, diskIconURL, String(localized: "Select a valid disk icon."))
+        ]
+        for (mode, url, message) in assets {
             if mode == .custom {
                 var isDirectory: ObjCBool = false
                 guard let url, url.isFileURL,
                       FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
                       !isDirectory.boolValue else {
-                    throw PackagingError.invalid("请选择有效的\(name)。")
+                    throw PackagingError.invalid(message)
                 }
             }
         }
         if signing == .identity && signingIdentity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            throw PackagingError.invalid("请填写签名身份名称或 SHA-1。")
+            throw PackagingError.invalid(String(localized: "Enter a signing identity name or SHA-1."))
         }
         var names: Set<String> = [".ds_store", ".background", ".volumeicon.icns"]
         if includeApplications { names.insert("applications") }
@@ -69,10 +73,10 @@ struct PackagingOptions: Codable, Equatable, Sendable {
             guard !item.name.isEmpty, item.name != ".", item.name != "..",
                   !item.name.contains("/"), !item.name.contains(":"), !item.name.contains("\0"),
                   names.insert(item.name.lowercased()).inserted else {
-                throw PackagingError.invalid("附加文件名称无效或重复：\(item.name)")
+                throw PackagingError.invalid(String(localized: "Invalid or duplicate additional file name: \(item.name)"))
             }
             guard item.url.isFileURL, FileManager.default.fileExists(atPath: item.url.path) else {
-                throw PackagingError.invalid("找不到附加文件：\(item.url.path)")
+                throw PackagingError.invalid(String(localized: "Additional file not found: \(item.url.path)"))
             }
             try validatePosition(x: item.x, y: item.y, name: item.name)
         }
@@ -80,7 +84,7 @@ struct PackagingOptions: Codable, Equatable, Sendable {
 
     private func validatePosition(x: Double, y: Double, name: String) throws {
         guard x.isFinite, y.isFinite, (0...windowWidth).contains(x), (0...windowHeight).contains(y) else {
-            throw PackagingError.invalid("\(name) 的图标位置须位于窗口范围内。")
+            throw PackagingError.invalid(String(localized: "The icon position for \(name) must be inside the window."))
         }
     }
 }
@@ -116,22 +120,22 @@ struct PackagingRequest: Sendable {
               let metadata = NSDictionary(contentsOf: sourceURL.appendingPathComponent("Contents/Info.plist")),
               let name = metadata["CFBundleDisplayName"] as? String ?? metadata["CFBundleName"] as? String,
               !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw PackagingError.invalid("请选择包含有效 Info.plist 的 .app。")
+            throw PackagingError.invalid(String(localized: "Select a .app bundle with a valid Info.plist."))
         }
         let source = sourceURL.resolvingSymlinksInPath().standardizedFileURL.path
         let output = outputURL.resolvingSymlinksInPath().standardizedFileURL.path
         guard outputURL.isFileURL, outputURL.pathExtension.lowercased() == "dmg",
               !output.hasPrefix(source + "/") else {
-            throw PackagingError.invalid("输出须为 App 包以外的 .dmg 文件。")
+            throw PackagingError.invalid(String(localized: "The output must be a .dmg file outside the app bundle."))
         }
         var isDirectory: ObjCBool = false
         if FileManager.default.fileExists(atPath: output, isDirectory: &isDirectory) {
             guard !isDirectory.boolValue, replaceExisting else {
-                throw PackagingError.invalid("输出已存在，请确认替换或选择其他文件名。")
+                throw PackagingError.invalid(String(localized: "The output already exists. Confirm replacement or choose another file name."))
             }
         }
         for item in options.extraItems where item.name.lowercased() == sourceURL.lastPathComponent.lowercased() {
-            throw PackagingError.invalid("附加文件与 App 重名：\(item.name)")
+            throw PackagingError.invalid(String(localized: "An additional file has the same name as the app: \(item.name)"))
         }
     }
 }
@@ -140,7 +144,20 @@ enum BuildStage: Int, Sendable {
     case preparing, creating, attaching, background, extras, icon, layout, permissions, detaching, compressing, signing, saving
 
     var title: String {
-        ["准备打包", "创建磁盘镜像", "挂载镜像", "设置背景", "添加文件与链接", "设置磁盘图标", "设置 Finder 布局", "设置文件权限", "卸载镜像", "压缩镜像", "签名镜像", "保存 DMG"][rawValue]
+        switch self {
+        case .preparing: String(localized: "Preparing")
+        case .creating: String(localized: "Creating Disk Image")
+        case .attaching: String(localized: "Mounting Image")
+        case .background: String(localized: "Setting Background")
+        case .extras: String(localized: "Adding Files and Links")
+        case .icon: String(localized: "Setting Disk Icon")
+        case .layout: String(localized: "Applying Finder Layout")
+        case .permissions: String(localized: "Setting Permissions")
+        case .detaching: String(localized: "Unmounting Image")
+        case .compressing: String(localized: "Compressing Image")
+        case .signing: String(localized: "Signing Image")
+        case .saving: String(localized: "Saving DMG")
+        }
     }
     var fraction: Double { Double(rawValue + 1) / 13 }
 }

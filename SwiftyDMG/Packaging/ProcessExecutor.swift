@@ -16,7 +16,7 @@ enum ProcessExecutor {
         let (termination, output, error) = try await (processExit, outputData, errorData)
         guard termination.reason == .exit, termination.status == 0 else {
             let detail = String(decoding: error.isEmpty ? output : error, as: UTF8.self)
-            throw PackagingError.process(detail.isEmpty ? "\(executable) 退出码：\(termination.status)" : detail)
+            throw PackagingError.process(detail.isEmpty ? String(localized: "\(executable) exited with status \(termination.status).") : detail)
         }
         return String(decoding: output, as: UTF8.self)
     }

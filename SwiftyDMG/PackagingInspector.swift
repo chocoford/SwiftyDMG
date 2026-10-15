@@ -3,90 +3,103 @@ import SwiftUI
 
 struct PackagingSettingsView: View {
     @Bindable var model: PackagingModel
+    var selection: WorkspaceItem? = nil
 
     var body: some View {
-        Form {
-            Section {
-                if let source = model.sourceURL {
-                    HStack(spacing: 10) {
-                        Image(nsImage: NSWorkspace.shared.icon(forFile: source.path)).resizable().frame(width: 32, height: 32)
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text(source.lastPathComponent).fontWeight(.medium).lineLimit(1)
-                            Text(source.deletingLastPathComponent().path).font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+        ScrollViewReader { proxy in
+            Form {
+                Section {
+                    if let source = model.sourceURL {
+                        HStack(spacing: 10) {
+                            Image(nsImage: NSWorkspace.shared.icon(forFile: source.path)).resizable().frame(width: 32, height: 32)
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(source.lastPathComponent).fontWeight(.medium).lineLimit(1)
+                                Text(source.deletingLastPathComponent().path).font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                            Button("Change…", action: model.chooseApp)
+                                .help("Change the app while keeping the current layout and assets")
+                        }.help(source.path)
+                        if !FileManager.default.fileExists(atPath: source.path) {
+                            Label("App not found. Choose it again.", systemImage: "exclamationmark.triangle")
+                                .font(.caption).foregroundStyle(.orange)
                         }
-                    }.help(source.path)
-                }
-            }
-            Section("输出") {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(model.outputURL?.lastPathComponent ?? "未选择输出文件").lineLimit(2).textSelection(.enabled)
-                    HStack(alignment: .top) {
-                        Text(model.outputURL?.deletingLastPathComponent().path ?? "")
-                            .font(.caption).foregroundStyle(.secondary).lineLimit(2).truncationMode(.middle)
-                        Spacer(minLength: 4)
-                        Button("更改…", action: model.chooseOutput)
                     }
-                }
-            }
-            Section("外观") {
-                Picker("背景", selection: $model.options.background) {
-                    Text("默认背景").tag(AssetMode.automatic)
-                    Text("自定义图片").tag(AssetMode.custom)
-                    Text("无背景").tag(AssetMode.none)
-                }
-                if model.options.background == .custom {
-                    InspectorAssetRow(url: model.options.backgroundURL) { model.chooseImage(forBackground: true) }
-                }
-                Picker("磁盘图标", selection: $model.options.diskIcon) {
-                    Text("根据 App 生成").tag(AssetMode.automatic)
-                    Text("自定义图片").tag(AssetMode.custom)
-                    Text("不设置").tag(AssetMode.none)
-                }
-                if model.options.diskIcon == .custom {
-                    InspectorAssetRow(url: model.options.diskIconURL) { model.chooseImage(forBackground: false) }
-                }
-            }
-            Section("Finder 窗口") {
-                LabeledContent("尺寸") {
-                    CoordinateFields(first: $model.options.windowWidth, second: $model.options.windowHeight, firstLabel: "W", secondLabel: "H")
-                }
-                LabeledContent("App") { CoordinateFields(first: $model.options.appX, second: $model.options.appY) }
-                Toggle("Applications 链接", isOn: $model.options.includeApplications)
-                if model.options.includeApplications {
-                    LabeledContent("链接") { CoordinateFields(first: $model.options.applicationsX, second: $model.options.applicationsY) }
-                }
-            }
-            Section("附加文件") {
-                ForEach($model.options.extraItems) { $item in
+                }.id("app")
+                Section("Output") {
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            TextField("文件名", text: $item.name)
-                            Button {
-                                model.options.extraItems.removeAll { $0.id == item.id }
-                            } label: { Image(systemName: "minus.circle") }
-                            .buttonStyle(.borderless).help("移除 \(item.name)")
+                        Text(model.outputURL?.lastPathComponent ?? String(localized: "No Output Selected")).lineLimit(2).textSelection(.enabled)
+                        HStack(alignment: .top) {
+                            Text(model.outputURL?.deletingLastPathComponent().path ?? "")
+                                .font(.caption).foregroundStyle(.secondary).lineLimit(2).truncationMode(.middle)
+                            Spacer(minLength: 4)
+                            Button("Change…", action: model.chooseOutput)
                         }
-                        CoordinateFields(first: $item.x, second: $item.y)
                     }
+                    Toggle("Use App Name and Version", isOn: $model.usesAutomaticOutputName)
                 }
-                Button(action: model.addFiles) { Label("添加文件…", systemImage: "plus") }
+                Section("Appearance") {
+                    Picker("Background", selection: $model.options.background) {
+                        Text("Default Background").tag(AssetMode.automatic)
+                        Text("Custom Image").tag(AssetMode.custom)
+                        Text("No Background").tag(AssetMode.none)
+                    }
+                    if model.options.background == .custom {
+                        InspectorAssetRow(url: model.options.backgroundURL) { model.chooseImage(forBackground: true) }
+                    }
+                    Picker("Disk Icon", selection: $model.options.diskIcon) {
+                        Text("Generate from App").tag(AssetMode.automatic)
+                        Text("Custom Image").tag(AssetMode.custom)
+                        Text("None").tag(AssetMode.none)
+                    }
+                    if model.options.diskIcon == .custom {
+                        InspectorAssetRow(url: model.options.diskIconURL) { model.chooseImage(forBackground: false) }
+                    }
+                }.id("appearance")
+                Section("Finder Window") {
+                    LabeledContent("Size") {
+                        CoordinateFields(first: $model.options.windowWidth, second: $model.options.windowHeight, firstLabel: "W", secondLabel: "H")
+                    }
+                    LabeledContent("App") { CoordinateFields(first: $model.options.appX, second: $model.options.appY) }
+                    Toggle("Applications Link", isOn: $model.options.includeApplications)
+                    if model.options.includeApplications {
+                        LabeledContent("Link") { CoordinateFields(first: $model.options.applicationsX, second: $model.options.applicationsY) }
+                    }
+                }.id("layout")
+                Section("Additional Files") {
+                    ForEach($model.options.extraItems) { $item in
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                TextField("File Name", text: $item.name)
+                                Button {
+                                    model.options.extraItems.removeAll { $0.id == item.id }
+                                } label: { Image(systemName: "minus.circle") }
+                                .buttonStyle(.borderless).help("Remove \(item.name)")
+                            }
+                            CoordinateFields(first: $item.x, second: $item.y)
+                        }.id("extra-\(item.id.uuidString)")
+                    }
+                    Button(action: model.addFiles) { Label("Add Files…", systemImage: "plus") }
+                }
+                Section("DMG Signing") {
+                    Picker("Signing", selection: $model.options.signing) {
+                        Text("None").tag(SigningMode.none)
+                        Text("Automatically Select Certificate").tag(SigningMode.automatic)
+                        Text("Specific Identity").tag(SigningMode.identity)
+                    }
+                    if model.options.signing == .identity {
+                        TextField("Identity name or SHA-1", text: $model.options.signingIdentity)
+                    }
+                    Text("Only the generated DMG is signed.").font(.caption).foregroundStyle(.secondary)
+                }
             }
-            Section("DMG 签名") {
-                Picker("签名", selection: $model.options.signing) {
-                    Text("不签名").tag(SigningMode.none)
-                    Text("自动选择证书").tag(SigningMode.automatic)
-                    Text("指定身份").tag(SigningMode.identity)
-                }
-                if model.options.signing == .identity {
-                    TextField("身份名称或 SHA-1", text: $model.options.signingIdentity)
-                }
-                Text("仅签名生成的 DMG。").font(.caption).foregroundStyle(.secondary)
+            .formStyle(.grouped)
+            .scrollContentBackground(.hidden)
+            .controlSize(.small)
+            .disabled(model.isBuilding)
+            .onChange(of: selection, initial: true) { _, selected in
+                if let selected { proxy.scrollTo(selected.inspectorAnchor, anchor: .top) }
             }
         }
-        .formStyle(.grouped)
-        .scrollContentBackground(.hidden)
-        .controlSize(.small)
-        .disabled(model.isBuilding)
     }
 }
 
@@ -96,9 +109,9 @@ private struct InspectorAssetRow: View {
 
     var body: some View {
         HStack {
-            Text(url?.lastPathComponent ?? "尚未选择").font(.caption).lineLimit(1).truncationMode(.middle)
+            Text(url?.lastPathComponent ?? String(localized: "Not Selected")).font(.caption).lineLimit(1).truncationMode(.middle)
             Spacer()
-            Button("选择…", action: action)
+            Button("Choose…", action: action)
         }
     }
 }
@@ -106,8 +119,8 @@ private struct InspectorAssetRow: View {
 struct CoordinateFields: View {
     @Binding var first: Double
     @Binding var second: Double
-    var firstLabel = "X"
-    var secondLabel = "Y"
+    var firstLabel: LocalizedStringKey = "X"
+    var secondLabel: LocalizedStringKey = "Y"
 
     var body: some View {
         HStack(spacing: 5) {

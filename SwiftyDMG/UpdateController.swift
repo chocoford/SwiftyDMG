@@ -34,7 +34,7 @@ final class UpdateController: ObservableObject {
 struct CheckForUpdatesView: View {
     @ObservedObject var updates: UpdateController
     var body: some View {
-        Button("检查更新…", action: updates.check).disabled(!updates.canCheck)
+        Button("Check for Updates…", action: updates.check).disabled(!updates.canCheck)
     }
 }
 
@@ -42,18 +42,18 @@ struct UpdateSettingsView: View {
     @ObservedObject var updates: UpdateController
     var body: some View {
         Form {
-            Section("软件更新") {
-                Toggle("自动检查更新", isOn: Binding(get: { updates.automaticChecks }, set: updates.setAutomaticChecks))
-                Toggle("自动下载更新", isOn: Binding(get: { updates.automaticDownloads }, set: updates.setAutomaticDownloads))
+            Section("Software Updates") {
+                Toggle("Automatically Check for Updates", isOn: Binding(get: { updates.automaticChecks }, set: updates.setAutomaticChecks))
+                Toggle("Automatically Download Updates", isOn: Binding(get: { updates.automaticDownloads }, set: updates.setAutomaticDownloads))
                 CheckForUpdatesView(updates: updates)
             }.disabled(!updates.isConfigured)
             if !updates.isConfigured {
-                Text("此版本尚未启用更新服务。")
+                Text("Updates are not enabled in this build.")
                     .foregroundStyle(.secondary)
             }
-            Section("Finder 服务") {
-                Text("将 SwiftyDMG 放入应用程序文件夹并启动一次。之后在 Finder 选中 App，通过右键菜单的「服务 → 用 SwiftyDMG 打包」打开。")
-                Text("若未显示，可在系统设置 → 键盘 → 键盘快捷键 → 服务中启用。")
+            Section("Finder Service") {
+                Text("Move SwiftyDMG to the Applications folder and launch it once. Then select an app in Finder and choose Services → Create DMG with SwiftyDMG from its context menu.")
+                Text("If the service is missing, enable it in System Settings → Keyboard → Keyboard Shortcuts → Services.")
                     .foregroundStyle(.secondary)
             }
         }

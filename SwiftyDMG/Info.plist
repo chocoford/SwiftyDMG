@@ -17,7 +17,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>zh_CN</string>
+	<string>en</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHighResolutionCapable</key>
@@ -38,6 +38,18 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
+			<string>SwiftyDMG Workspace</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.chocoford.swiftydmg.workspace</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
 			<string>macOS Application</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
@@ -55,7 +67,7 @@
 			<key>NSMenuItem</key>
 			<dict>
 				<key>default</key>
-				<string>用 SwiftyDMG 打包</string>
+				<string>Create DMG with SwiftyDMG</string>
 			</dict>
 			<key>NSMessage</key>
 			<string>createDMG</string>
@@ -74,6 +86,26 @@
 			<dict>
 				<key>NSApplicationIdentifier</key>
 				<string>com.apple.finder</string>
+			</dict>
+		</dict>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.chocoford.swiftydmg.workspace</string>
+			<key>UTTypeDescription</key>
+			<string>SwiftyDMG Workspace</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>swiftydmg</string>
+				</array>
 			</dict>
 		</dict>
 	</array>

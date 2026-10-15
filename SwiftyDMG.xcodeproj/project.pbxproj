@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C30000000000000000000101 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000001 /* WelcomeView.swift */; };
-		C30000000000000000000102 /* WindowSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000002 /* WindowSizing.swift */; };
-		C30000000000000000000103 /* PackagingInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000003 /* PackagingInspector.swift */; };
-		C30000000000000000000104 /* BuildInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000004 /* BuildInspector.swift */; };
 		39A9DF12307FE726004704F3 /* Packager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF03307FE726004704F3 /* Packager.swift */; };
 		39A9DF13307FE726004704F3 /* PackagingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF04307FE726004704F3 /* PackagingOptions.swift */; };
 		39A9DF14307FE726004704F3 /* ProcessExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF05307FE726004704F3 /* ProcessExecutor.swift */; };
@@ -31,13 +27,17 @@
 		B20000000000000000000021 /* SwiftyDMG/Packaging/PackagingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000011 /* SwiftyDMG/Packaging/PackagingOptions.swift */; };
 		B20000000000000000000022 /* SwiftyDMG/Packaging/ProcessExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000012 /* SwiftyDMG/Packaging/ProcessExecutor.swift */; };
 		B20000000000000000000023 /* SwiftyDMG/Packaging/Packager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */; };
+		C30000000000000000000101 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000001 /* WelcomeView.swift */; };
+		C30000000000000000000102 /* WindowSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000002 /* WindowSizing.swift */; };
+		C30000000000000000000103 /* PackagingInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000003 /* PackagingInspector.swift */; };
+		C30000000000000000000104 /* BuildInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000004 /* BuildInspector.swift */; };
+		D40000000000000000000101 /* WorkspaceDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000001 /* WorkspaceDocument.swift */; };
+		D40000000000000000000102 /* WorkspaceCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000002 /* WorkspaceCommands.swift */; };
+		D40000000000000000000103 /* WorkspaceSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* WorkspaceSidebar.swift */; };
+		E50000000000000000000101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C30000000000000000000001 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
-		C30000000000000000000002 /* WindowSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSizing.swift; sourceTree = "<group>"; };
-		C30000000000000000000003 /* PackagingInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingInspector.swift; sourceTree = "<group>"; };
-		C30000000000000000000004 /* BuildInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInspector.swift; sourceTree = "<group>"; };
 		000000000000000000000120 /* SwiftyDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftyDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		39A9DF03307FE726004704F3 /* Packager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packager.swift; sourceTree = "<group>"; };
 		39A9DF04307FE726004704F3 /* PackagingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingOptions.swift; sourceTree = "<group>"; };
@@ -56,6 +56,14 @@
 		B20000000000000000000011 /* SwiftyDMG/Packaging/PackagingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/PackagingOptions.swift; sourceTree = SOURCE_ROOT; };
 		B20000000000000000000012 /* SwiftyDMG/Packaging/ProcessExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/ProcessExecutor.swift; sourceTree = SOURCE_ROOT; };
 		B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/Packager.swift; sourceTree = SOURCE_ROOT; };
+		C30000000000000000000001 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		C30000000000000000000002 /* WindowSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSizing.swift; sourceTree = "<group>"; };
+		C30000000000000000000003 /* PackagingInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingInspector.swift; sourceTree = "<group>"; };
+		C30000000000000000000004 /* BuildInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInspector.swift; sourceTree = "<group>"; };
+		D40000000000000000000001 /* WorkspaceDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceDocument.swift; sourceTree = "<group>"; };
+		D40000000000000000000002 /* WorkspaceCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceCommands.swift; sourceTree = "<group>"; };
+		D40000000000000000000003 /* WorkspaceSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebar.swift; sourceTree = "<group>"; };
+		E50000000000000000000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -129,8 +137,12 @@
 			isa = PBXGroup;
 			children = (
 				39A9DF0C307FE726004704F3 /* Info.plist */,
+				E50000000000000000000001 /* Localizable.xcstrings */,
 				39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */,
 				39A9DF0A307FE726004704F3 /* ContentView.swift */,
+				D40000000000000000000001 /* WorkspaceDocument.swift */,
+				D40000000000000000000002 /* WorkspaceCommands.swift */,
+				D40000000000000000000003 /* WorkspaceSidebar.swift */,
 				C30000000000000000000001 /* WelcomeView.swift */,
 				C30000000000000000000002 /* WindowSizing.swift */,
 				C30000000000000000000003 /* PackagingInspector.swift */,
@@ -251,6 +263,7 @@
 		000000000000000140000000 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				E50000000000000000000101 /* Localizable.xcstrings in Resources */,
 				39A9DF1A307FE726004704F3 /* dmg-background.tiff in Resources */,
 				39A9DF1B307FE726004704F3 /* Assets.xcassets in Resources */,
 			);
@@ -270,6 +283,9 @@
 				39A9DF13307FE726004704F3 /* PackagingOptions.swift in Sources */,
 				39A9DF14307FE726004704F3 /* ProcessExecutor.swift in Sources */,
 				39A9DF15307FE726004704F3 /* ContentView.swift in Sources */,
+				D40000000000000000000101 /* WorkspaceDocument.swift in Sources */,
+				D40000000000000000000102 /* WorkspaceCommands.swift in Sources */,
+				D40000000000000000000103 /* WorkspaceSidebar.swift in Sources */,
 				C30000000000000000000101 /* WelcomeView.swift in Sources */,
 				C30000000000000000000102 /* WindowSizing.swift in Sources */,
 				C30000000000000000000103 /* PackagingInspector.swift in Sources */,

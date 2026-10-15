@@ -5,13 +5,15 @@ import hdiutil
 
 /// Rejects overlapping jobs on this packager and publishes only completed images.
 actor Packager {
+    // AppDMG.default owns mutable progress state, so GUI windows share this gate.
+    static let shared = Packager()
     private var isBuilding = false
 
     init() {}
 
     func build(_ request: PackagingRequest, onProgress: @escaping @Sendable (BuildStage) -> Void = { _ in }) async throws -> URL {
         guard !isBuilding else {
-            throw PackagingError.invalid("正在创建 DMG，请等待当前任务完成。")
+            throw PackagingError.invalid(String(localized: "Another workspace is creating a DMG. Wait for it to finish and try again."))
         }
         isBuilding = true
         defer { isBuilding = false }
@@ -93,7 +95,7 @@ actor Packager {
                 try await detachOwnedImage(stagedURL)
                 try fm.removeItem(at: directory)
             } catch {
-                throw PackagingError.cleanup("\(originalError.localizedDescription)\n\n临时镜像清理失败：\(error.localizedDescription)\n临时目录：\(directory.path)")
+                throw PackagingError.cleanup(String(localized: "\(originalError.localizedDescription)\n\nUnable to clean up the temporary image: \(error.localizedDescription)\nTemporary directory: \(directory.path)"))
             }
             throw originalError
         }
@@ -112,7 +114,7 @@ actor Packager {
         for prefix in ["Developer ID Application:", "Apple Development:", "Mac Developer:"] {
             if let identity = identities.first(where: { $0.name.hasPrefix(prefix) }) { return identity.hash }
         }
-        throw PackagingError.invalid("找不到有效的 Developer ID 或开发签名证书。请指定身份，或选择不签名。")
+        throw PackagingError.invalid(String(localized: "No valid Developer ID or development signing certificate was found. Specify an identity or choose None."))
     }
 
     private func detachOwnedImage(_ image: URL) async throws {

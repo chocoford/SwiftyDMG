@@ -12,8 +12,8 @@ struct WelcomeView: View {
                 .foregroundStyle(isTargeted ? Color.accentColor : Color.secondary)
                 .symbolRenderingMode(.hierarchical)
             VStack(spacing: 8) {
-                Text("拖入你的 App").font(.title2.weight(.semibold))
-                Text("为 macOS App 创建安装镜像")
+                Text("Drop Your App Here").font(.title2.weight(.semibold))
+                Text("Create a disk image for your macOS app")
                     .font(.callout).foregroundStyle(.secondary)
             }
             openButton

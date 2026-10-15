@@ -1,0 +1,450 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@\n\nUnable to clean up the temporary image: %@\nTemporary directory: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@\n\nUnable to clean up the temporary image: %2$@\nTemporary directory: %3$@"
+          }
+        }
+      }
+    },
+    "%@ × %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ × %2$@"
+          }
+        }
+      }
+    },
+    "%@ exited with status %d." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ exited with status %2$d."
+          }
+        }
+      }
+    },
+    "%@ icon position" : {
+
+    },
+    "%@ will be replaced only after the build succeeds." : {
+
+    },
+    "Add Applications Link" : {
+
+    },
+    "Add Background Image…" : {
+
+    },
+    "Add Content or Assets" : {
+
+    },
+    "Add Disk Icon…" : {
+
+    },
+    "Add Files…" : {
+
+    },
+    "Add to DMG" : {
+
+    },
+    "Adding Files and Links" : {
+
+    },
+    "Additional file not found: %@" : {
+
+    },
+    "Additional Files" : {
+
+    },
+    "An additional file has the same name as the app: %@" : {
+
+    },
+    "Another workspace is creating a DMG. Wait for it to finish and try again." : {
+
+    },
+    "App" : {
+
+    },
+    "App not found. Choose it again." : {
+
+    },
+    "Appearance" : {
+
+    },
+    "Applications" : {
+
+    },
+    "Applications Link" : {
+
+    },
+    "Applying Finder Layout" : {
+
+    },
+    "Automatically Check for Updates" : {
+
+    },
+    "Automatically Download Updates" : {
+
+    },
+    "Automatically Select Certificate" : {
+
+    },
+    "Background" : {
+
+    },
+    "Background Image" : {
+
+    },
+    "Build" : {
+
+    },
+    "Build Failed" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Change App…" : {
+
+    },
+    "Change the app while keeping the current layout and assets" : {
+
+    },
+    "Change…" : {
+
+    },
+    "Check for Updates…" : {
+
+    },
+    "Choose Background Image…" : {
+
+    },
+    "Choose Disk Icon…" : {
+
+    },
+    "Choose…" : {
+
+    },
+    "Click the play button in the toolbar to create a DMG.\nBuild progress and logs will appear here." : {
+
+    },
+    "Compressing Image" : {
+
+    },
+    "Continue Building" : {
+
+    },
+    "Copy Build Log" : {
+
+    },
+    "Copy Error" : {
+
+    },
+    "Create a disk image for your macOS app" : {
+
+    },
+    "Create DMG" : {
+
+    },
+    "Create DMG (⌘↩)" : {
+
+    },
+    "Creating Disk Image" : {
+
+    },
+    "Creating DMG" : {
+
+    },
+    "Custom Image" : {
+
+    },
+    "Default Background" : {
+
+    },
+    "Disk Icon" : {
+
+    },
+    "Disk Icon · Automatic" : {
+
+    },
+    "Disk Image" : {
+
+    },
+    "DMG Created" : {
+
+    },
+    "DMG Signing" : {
+
+    },
+    "Drag icons to adjust the layout" : {
+
+    },
+    "Drag to reposition %@" : {
+
+    },
+    "Drop Your App Here" : {
+
+    },
+    "Enter a signing identity name or SHA-1." : {
+
+    },
+    "Export Preset…" : {
+
+    },
+    "File Name" : {
+
+    },
+    "File not found. Choose it again in the inspector." : {
+
+    },
+    "Finder Service" : {
+
+    },
+    "Finder Window" : {
+
+    },
+    "Fit to Window" : {
+
+    },
+    "Generate from App" : {
+
+    },
+    "H" : {
+
+    },
+    "Identity name or SHA-1" : {
+
+    },
+    "If the service is missing, enable it in System Settings → Keyboard → Keyboard Shortcuts → Services." : {
+
+    },
+    "Image Contents" : {
+
+    },
+    "Import Preset…" : {
+
+    },
+    "Inspector" : {
+
+    },
+    "Invalid or duplicate additional file name: %@" : {
+
+    },
+    "Link" : {
+
+    },
+    "Logs" : {
+
+    },
+    "Mounting Image" : {
+
+    },
+    "Move SwiftyDMG to the Applications folder and launch it once. Then select an app in Finder and choose Services → Create DMG with SwiftyDMG from its context menu." : {
+
+    },
+    "New Workspace from App" : {
+
+    },
+    "New Workspace from App…" : {
+
+    },
+    "No Background" : {
+
+    },
+    "No Disk Icon" : {
+
+    },
+    "No Logs Yet" : {
+
+    },
+    "No Output Selected" : {
+
+    },
+    "No valid Developer ID or development signing certificate was found. Specify an identity or choose None." : {
+
+    },
+    "None" : {
+
+    },
+    "Not Selected" : {
+
+    },
+    "OK" : {
+
+    },
+    "Only the generated DMG is signed." : {
+
+    },
+    "Open…" : {
+
+    },
+    "Output" : {
+
+    },
+    "Preparing" : {
+
+    },
+    "Presets" : {
+
+    },
+    "Preview Zoom" : {
+
+    },
+    "Ready" : {
+
+    },
+    "Remove" : {
+
+    },
+    "Remove %@" : {
+
+    },
+    "Remove Background" : {
+
+    },
+    "Remove Link" : {
+
+    },
+    "Remove Selected Item" : {
+
+    },
+    "Replace" : {
+
+    },
+    "Replace Existing DMG?" : {
+
+    },
+    "Reset to Defaults" : {
+
+    },
+    "Save DMG" : {
+
+    },
+    "Saved: %@" : {
+
+    },
+    "Saving DMG" : {
+
+    },
+    "Select a .app bundle with a valid Info.plist." : {
+
+    },
+    "Select a .app bundle." : {
+
+    },
+    "Select a valid background image." : {
+
+    },
+    "Select a valid disk icon." : {
+
+    },
+    "Select an App" : {
+
+    },
+    "Select one .app in Finder." : {
+
+    },
+    "Setting Background" : {
+
+    },
+    "Setting Disk Icon" : {
+
+    },
+    "Setting Permissions" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Show in Finder" : {
+
+    },
+    "Show or Hide Inspector" : {
+
+    },
+    "Signing" : {
+
+    },
+    "Signing Image" : {
+
+    },
+    "Size" : {
+
+    },
+    "Software Updates" : {
+
+    },
+    "Specific Identity" : {
+
+    },
+    "The app and assets in a workspace must refer to local files." : {
+
+    },
+    "The app’s Info.plist could not be read. Select a valid macOS app." : {
+
+    },
+    "The icon position for %@ must be inside the window." : {
+
+    },
+    "The image could not be read. Select a valid image file." : {
+
+    },
+    "The output already exists. Confirm replacement or choose another file name." : {
+
+    },
+    "The output must be a .dmg file outside the app bundle." : {
+
+    },
+    "This workspace file version is not supported." : {
+
+    },
+    "Unable to Complete Operation" : {
+
+    },
+    "Unable to import preset: %@" : {
+
+    },
+    "Unable to open this app." : {
+
+    },
+    "Unmounting Image" : {
+
+    },
+    "Updates are not enabled in this build." : {
+
+    },
+    "Use App Name and Version" : {
+
+    },
+    "Use Default Background" : {
+
+    },
+    "W" : {
+
+    },
+    "Wait for the current build to finish before quitting so temporary disk images can be safely unmounted." : {
+
+    },
+    "Window width must be 320–4096 and height must be 240–4096." : {
+
+    },
+    "X" : {
+
+    },
+    "Y" : {
+
+    },
+    "Your App" : {
+
+    }
+  },
+  "version" : "1.0"
+}

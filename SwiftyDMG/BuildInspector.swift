@@ -24,24 +24,24 @@ struct BuildInspector: View {
                 if hasActivity { ProgressView(value: model.progress).tint(model.resultURL != nil ? .green : .accentColor) }
                 if let result = model.resultURL {
                     Text(result.lastPathComponent).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
-                    Button("在 Finder 中显示") { NSWorkspace.shared.activateFileViewerSelecting([result]) }
+                    Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([result]) }
                 } else if !hasActivity {
-                    Text("点击右上角的播放按钮创建 DMG。\n打包进度和日志会显示在这里。")
+                    Text("Click the play button in the toolbar to create a DMG.\nBuild progress and logs will appear here.")
                         .font(.callout).foregroundStyle(.secondary).lineSpacing(4)
                 }
             }.padding(16)
             Divider()
             HStack {
-                Text("日志").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                Text("Logs").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 Spacer()
                 Button(action: copyLog) { Image(systemName: "doc.on.doc") }
-                    .buttonStyle(.borderless).help("复制打包日志").disabled(model.log.isEmpty)
+                    .buttonStyle(.borderless).help("Copy Build Log").disabled(model.log.isEmpty)
             }.padding(.horizontal, 16).padding(.vertical, 10)
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 8) {
                         if model.log.isEmpty {
-                            Text("暂无日志").foregroundStyle(.tertiary)
+                            Text("No Logs Yet").foregroundStyle(.tertiary)
                         } else {
                             Text(model.log.joined(separator: "\n\n")).textSelection(.enabled)
                         }

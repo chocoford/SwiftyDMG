@@ -7,7 +7,7 @@ enum PreviewZoom: String, CaseIterable, Identifiable {
     var id: Self { self }
     var title: String {
         switch self {
-        case .fit: "适合窗口"
+        case .fit: String(localized: "Fit to Window")
         case .half: "50%"
         case .actual: "100%"
         case .double: "200%"
@@ -34,12 +34,12 @@ struct PreviewCanvas: View {
             LayoutPreview(options: $options, sourceURL: sourceURL, zoom: zoom)
                 .disabled(isBuilding)
             HStack {
-                Picker("预览缩放", selection: $zoom) {
+                Picker("Preview Zoom", selection: $zoom) {
                     ForEach(PreviewZoom.allCases) { Text($0.title).tag($0) }
                 }
                 .labelsHidden().frame(width: 110)
                 Spacer()
-                Text("拖动图标调整位置").foregroundStyle(.secondary)
+                Text("Drag icons to adjust the layout").foregroundStyle(.secondary)
                 Spacer()
                 Text("\(options.windowWidth, format: .number.precision(.fractionLength(0))) × \(options.windowHeight, format: .number.precision(.fractionLength(0)))")
                     .monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
@@ -76,7 +76,7 @@ struct LayoutPreview: View {
             let fit = max(0.05, min(1, (geometry.size.width - 64) / width, (geometry.size.height - 64) / height))
             let scale = zoom.scale ?? fit
             ScrollView([.horizontal, .vertical]) {
-                FinderWindowPreview(title: sourceURL?.deletingPathExtension().lastPathComponent ?? "安装镜像", titleHeight: titleHeight) {
+                FinderWindowPreview(title: sourceURL?.deletingPathExtension().lastPathComponent ?? String(localized: "Disk Image"), titleHeight: titleHeight) {
                     ZStack(alignment: .topLeading) {
                         Color.white
                         if let backgroundImage {
@@ -85,7 +85,7 @@ struct LayoutPreview: View {
                                 .resizable()
                                 .frame(width: backgroundImage.size.width, height: backgroundImage.size.height)
                         }
-                        FinderPreviewItem(name: sourceURL?.deletingPathExtension().lastPathComponent ?? "Your App", path: sourceURL?.path, position: appPosition, bounds: CGSize(width: width, height: contentHeight))
+                        FinderPreviewItem(name: sourceURL?.deletingPathExtension().lastPathComponent ?? String(localized: "Your App"), path: sourceURL?.path, position: appPosition, bounds: CGSize(width: width, height: contentHeight))
                         if options.includeApplications {
                             FinderPreviewItem(name: "Applications", path: "/Applications", isAlias: true, position: applicationsPosition, bounds: CGSize(width: width, height: contentHeight))
                         }
@@ -189,11 +189,11 @@ private struct FinderPreviewItem: View {
                 position = CGPoint(x: min(max(origin.x + value.translation.width, 0), bounds.width), y: min(max(origin.y + value.translation.height, 0), bounds.height))
             }
             .onEnded { _ in dragOrigin = nil })
-        .help("拖动以调整 \(name) 的位置")
-        .accessibilityLabel("\(name) 图标位置")
+        .help("Drag to reposition \(name)")
+        .accessibilityLabel("\(name) icon position")
     }
 }
 
-#Preview("Finder 布局") {
+#Preview("Finder Layout") {
     PreviewCanvas(options: .constant(.init()), sourceURL: nil, isBuilding: false).frame(width: 780, height: 640)
 }
