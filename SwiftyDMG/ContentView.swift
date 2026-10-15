@@ -1,48 +1,93 @@
 import AppKit
 import SwiftUI
 
+enum InspectorTab: String, CaseIterable, Identifiable {
+    case settings, activity
+    var id: Self { self }
+    var title: String { self == .settings ? "设置" : "构建" }
+    var symbol: String { self == .settings ? "slider.horizontal.3" : "list.bullet.rectangle" }
+}
+
+private enum WindowPresentation {
+    case welcome, hidingWelcome, resizing, showingEditor, editor
+
+    var presentsEditor: Bool { self == .showingEditor || self == .editor }
+    var expandsWindow: Bool { self == .resizing || presentsEditor }
+    var contentOpacity: Double { self == .welcome || self == .editor ? 1 : 0 }
+    var isInteractive: Bool { self == .welcome || self == .editor }
+}
+
 struct ContentView: View {
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable var model: PackagingModel
     let delegate: ApplicationDelegate
-    @Environment(\.openWindow) private var openWindow
+    @State private var presentation = WindowPresentation.welcome
+    @State private var inspectorTab = InspectorTab.settings
+    @State private var inspectorPresented = true
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Image(systemName: "externaldrive.fill.badge.plus").font(.title).foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("SwiftyDMG").font(.title2.bold())
-                    Text("为你的 App 制作一个漂亮的安装镜像").foregroundStyle(.secondary)
-                }
-                Spacer()
-                Button("选择 App…", action: model.chooseApp).disabled(model.isBuilding)
-            }.padding(24)
-            Divider()
-            HSplitView {
-                ScrollView {
-                    PackagingSettingsView(model: model)
-                        .padding(20)
-                }.frame(minWidth: 330, idealWidth: 355, maxWidth: 430)
-                VStack(alignment: .leading, spacing: 20) {
-                    appSelection
-                    HStack {
-                        Label("布局预览", systemImage: "rectangle.inset.filled").font(.headline)
-                        Spacer()
-                        Text("拖动图标调整位置").font(.caption).foregroundStyle(.secondary)
-                    }
-                    LayoutPreview(options: $model.options, sourceURL: model.sourceURL)
-                        .disabled(model.isBuilding)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    outputSelection
-                }.padding(24).frame(minWidth: 540)
+        ZStack {
+            if presentation.presentsEditor {
+                PackagingWorkspace(model: model, inspectorTab: $inspectorTab, inspectorPresented: $inspectorPresented)
+                    .transition(.identity)
+                    .task { revealEditor() }
+            } else {
+                WelcomeView(open: model.chooseApp, select: model.selectApp)
+                    .transition(.identity)
             }
-            Divider()
-            footer.padding(20)
         }
-        .onAppear { delegate.showMainWindow = { openWindow(id: "main") } }
-        .onOpenURL(perform: model.selectApp)
+        .opacity(presentation.contentOpacity)
+        .allowsHitTesting(presentation.isInteractive)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(WindowSizing(isEditing: presentation.expandsWindow, reduceMotion: reduceMotion, resolve: delegate.registerMainWindow, onResizeComplete: finishWindowResize))
+        .navigationTitle(presentation.presentsEditor ? model.sourceURL?.deletingPathExtension().lastPathComponent ?? "SwiftyDMG" : "SwiftyDMG")
+        .toolbar {
+            if presentation.presentsEditor {
+                ToolbarItem(placement: .navigation) {
+                    Button(action: model.chooseApp) { Label("打开 App…", systemImage: "folder") }
+                        .disabled(model.isBuilding)
+                        .help("打开另一个 App（⌘O）")
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        withAnimation { inspectorPresented.toggle() }
+                    } label: { Label("检查器", systemImage: "sidebar.right") }
+                    .help("显示或隐藏检查器")
+                    .accessibilityIdentifier("toggleInspectorButton")
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button { model.startBuild() } label: {
+                        if model.isBuilding {
+                            ProgressView()
+                        } else {
+                            Label("创建 DMG", systemImage: "play.fill")
+                        }
+                    }
+                    .disabled(model.isBuilding)
+                    .keyboardShortcut(.return, modifiers: .command)
+                    .help("创建 DMG（⌘↩）")
+                    .accessibilityIdentifier("createDMGButton")
+                }
+            }
+        }
+        .toolbar(presentation.presentsEditor ? .visible : .hidden, for: .windowToolbar)
+        .onAppear { delegate.reopenMainWindow = { openWindow(id: "main") } }
+        .onOpenURL { model.selectApp($0) }
+        .onChange(of: model.sourceURL != nil, initial: true) { _, hasSource in
+            beginOpening(hasSource)
+        }
+        .onChange(of: model.sourceURL) { old, new in
+            if old != new { inspectorTab = .settings }
+        }
+        .onChange(of: model.isBuilding) { _, building in
+            if building {
+                inspectorTab = .activity
+                inspectorPresented = true
+            }
+        }
         .alert("无法完成操作", isPresented: Binding(get: { model.errorMessage != nil }, set: { if !$0 { model.errorMessage = nil } })) {
-            Button("复制错误") { NSPasteboard.general.clearContents(); NSPasteboard.general.setString(model.errorMessage ?? "", forType: .string) }
+            Button("复制错误", action: copyError)
             Button("好", role: .cancel) {}
         } message: { Text(model.errorMessage ?? "") }
         .confirmationDialog("替换已有 DMG？", isPresented: $model.confirmReplacement, titleVisibility: .visible) {
@@ -51,175 +96,118 @@ struct ContentView: View {
         } message: { Text("打包成功后才会替换 \(model.outputURL?.lastPathComponent ?? "DMG")。") }
     }
 
-    private var appSelection: some View {
-        HStack(spacing: 16) {
-            if let url = model.sourceURL {
-                Image(nsImage: NSWorkspace.shared.icon(forFile: url.path)).resizable().frame(width: 52, height: 52)
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(url.lastPathComponent).font(.headline)
-                    Text(url.deletingLastPathComponent().path).font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
-                }
-            } else {
-                Image(systemName: "app.badge").font(.system(size: 38)).foregroundStyle(.tint)
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("拖入一个 .app").font(.headline)
-                    Text("也可以从 Finder 服务或「选择 App」打开").font(.caption).foregroundStyle(.secondary)
-                }
-            }
-            Spacer()
+    private func beginOpening(_ hasSource: Bool) {
+        guard hasSource else {
+            setPresentationWithoutAnimation(.welcome)
+            return
         }
-        .padding(20)
-        .frame(maxWidth: .infinity)
-        .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 12))
-        .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.secondary.opacity(0.2), style: StrokeStyle(lineWidth: 1, dash: model.sourceURL == nil ? [5, 4] : [])))
-        .dropDestination(for: URL.self) { urls, _ in
-            guard urls.count == 1, !model.isBuilding else { return false }
-            model.selectApp(urls[0])
-            return urls[0].pathExtension.lowercased() == "app"
+        guard presentation == .welcome else { return }
+        if reduceMotion {
+            setPresentationWithoutAnimation(.resizing)
+            return
         }
-        .accessibilityIdentifier("appDropArea")
-    }
-
-    private var outputSelection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 5) {
-                Text("输出文件").font(.caption).foregroundStyle(.secondary)
-                Text(model.outputURL?.path ?? "选择 App 后生成默认文件名")
-                    .font(.callout).lineLimit(1).truncationMode(.middle).textSelection(.enabled)
-            }
-            Spacer()
-            Button("更改…", action: model.chooseOutput).disabled(model.sourceURL == nil || model.isBuilding)
+        // The native resize starts only once the welcome content is fully hidden.
+        withAnimation(.easeOut(duration: 0.14), completionCriteria: .removed) {
+            presentation = .hidingWelcome
+        } completion: {
+            guard presentation == .hidingWelcome, model.sourceURL != nil else { return }
+            setPresentationWithoutAnimation(.resizing)
         }
     }
 
-    private var footer: some View {
-        HStack(alignment: .center, spacing: 24) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    if model.resultURL != nil { Image(systemName: "checkmark.circle.fill").foregroundStyle(.green) }
-                    Text(model.status).font(.callout)
-                }
-                if model.isBuilding { ProgressView(value: model.progress).frame(width: 250) }
-                if !model.log.isEmpty {
-                    DisclosureGroup("查看打包日志") {
-                        ScrollView {
-                            Text(model.log.joined(separator: "\n")).font(.caption.monospaced()).textSelection(.enabled)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }.frame(maxHeight: 100)
-                    }.font(.caption).frame(maxWidth: 550)
-                }
-            }
-            Spacer()
-            if let url = model.resultURL {
-                Button("在 Finder 中显示") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
-            }
-            Button(action: { model.startBuild() }) {
-                Label(model.isBuilding ? "正在打包…" : "创建 DMG", systemImage: "shippingbox")
-                    .padding(.horizontal, 12).padding(.vertical, 4)
-            }
-            .buttonStyle(.borderedProminent)
-            .keyboardShortcut(.return, modifiers: .command)
-            .disabled(model.sourceURL == nil || model.isBuilding)
-            .accessibilityIdentifier("createDMGButton")
+    private func finishWindowResize(_ isEditing: Bool) {
+        guard isEditing, presentation == .resizing else { return }
+        // Mount the editor at zero opacity after the window reaches its final size.
+        setPresentationWithoutAnimation(.showingEditor)
+    }
+
+    private func revealEditor() {
+        guard presentation == .showingEditor else { return }
+        if reduceMotion {
+            setPresentationWithoutAnimation(.editor)
+        } else {
+            withAnimation(.easeIn(duration: 0.2)) { presentation = .editor }
         }
+    }
+
+    private func setPresentationWithoutAnimation(_ next: WindowPresentation) {
+        var transaction = Transaction(animation: nil)
+        transaction.disablesAnimations = true
+        withTransaction(transaction) { presentation = next }
+    }
+
+    private func copyError() {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(model.errorMessage ?? "", forType: .string)
     }
 }
 
-struct PackagingSettingsView: View {
+private struct PackagingWorkspace: View {
     @Bindable var model: PackagingModel
+    @Binding var inspectorTab: InspectorTab
+    @Binding var inspectorPresented: Bool
 
     var body: some View {
-        Form {
-            Section("外观") {
-                Picker("背景", selection: $model.options.background) {
-                    Text("默认背景").tag(AssetMode.automatic)
-                    Text("自定义图片").tag(AssetMode.custom)
-                    Text("无背景").tag(AssetMode.none)
-                }
-                if model.options.background == .custom {
-                    assetRow(model.options.backgroundURL) { model.chooseImage(forBackground: true) }
-                }
-                Picker("磁盘图标", selection: $model.options.diskIcon) {
-                    Text("根据 App 生成").tag(AssetMode.automatic)
-                    Text("自定义图片").tag(AssetMode.custom)
-                    Text("不设置").tag(AssetMode.none)
-                }
-                if model.options.diskIcon == .custom {
-                    assetRow(model.options.diskIconURL) { model.chooseImage(forBackground: false) }
-                }
-            }
-            Section("Finder 窗口") {
-                CoordinateFields(first: $model.options.windowWidth, second: $model.options.windowHeight, firstLabel: "宽", secondLabel: "高")
-                LabeledContent("App 位置") {
-                    CoordinateFields(first: $model.options.appX, second: $model.options.appY)
-                }
-                Toggle("添加 Applications 链接", isOn: $model.options.includeApplications)
-                if model.options.includeApplications {
-                    LabeledContent("链接位置") {
-                        CoordinateFields(first: $model.options.applicationsX, second: $model.options.applicationsY)
+        PreviewCanvas(options: $model.options, sourceURL: model.sourceURL, isBuilding: model.isBuilding)
+            .inspector(isPresented: $inspectorPresented) {
+                VStack(spacing: 0) {
+                    InspectorTabPicker(selection: $inspectorTab)
+                        .padding(12)
+                    Divider()
+                    if inspectorTab == .settings {
+                        PackagingSettingsView(model: model)
+                    } else {
+                        BuildInspector(model: model)
                     }
                 }
+                .inspectorColumnWidth(min: 300, ideal: 320, max: 380)
             }
-            Section("附加文件") {
-                ForEach($model.options.extraItems) { $item in
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            TextField("文件名", text: $item.name)
-                            Button {
-                                model.options.extraItems.removeAll { $0.id == item.id }
-                            } label: { Image(systemName: "minus.circle") }
-                            .buttonStyle(.borderless).help("移除 \(item.name)")
+    }
+}
+
+private struct InspectorTabPicker: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Binding var selection: InspectorTab
+    @Namespace private var selectionAnimation
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(InspectorTab.allCases) { tab in
+                Button {
+                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
+                        selection = tab
+                    }
+                } label: {
+                    Label(tab.title, systemImage: tab.symbol)
+                        .font(.callout.weight(.medium))
+                        .foregroundStyle(selection == tab ? Color.primary : Color.secondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background {
+                            if selection == tab {
+                                Capsule()
+                                    .fill(Color(nsColor: .controlBackgroundColor))
+                                    .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
+                                    .matchedGeometryEffect(id: "inspectorSelection", in: selectionAnimation)
+                            }
                         }
-                        CoordinateFields(first: $item.x, second: $item.y)
-                    }
+                        .contentShape(Capsule())
                 }
-                Button("添加文件…", action: model.addFiles)
-            }
-            Section("DMG 签名") {
-                Picker("签名方式", selection: $model.options.signing) {
-                    Text("不签名").tag(SigningMode.none)
-                    Text("自动选择证书").tag(SigningMode.automatic)
-                    Text("指定身份").tag(SigningMode.identity)
-                }
-                if model.options.signing == .identity {
-                    TextField("身份名称或 SHA-1", text: $model.options.signingIdentity)
-                }
-                Text("签名作用于生成的 DMG，App 本身的签名不会改变。")
-                    .font(.caption).foregroundStyle(.secondary)
+                .buttonStyle(.plain)
+                .accessibilityLabel(tab.title)
+                .accessibilityAddTraits(selection == tab ? .isSelected : [])
+                .accessibilityIdentifier("inspectorTab_\(tab.rawValue)")
             }
         }
-        .formStyle(.grouped)
-        .disabled(model.isBuilding)
-    }
-
-    private func assetRow(_ url: URL?, action: @escaping () -> Void) -> some View {
-        HStack {
-            Text(url?.lastPathComponent ?? "尚未选择").font(.caption).lineLimit(1).truncationMode(.middle)
-            Spacer()
-            Button("选择…", action: action)
-        }
+        .padding(3)
+        .background(.quaternary.opacity(0.5), in: Capsule())
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("检查器")
     }
 }
 
-struct CoordinateFields: View {
-    @Binding var first: Double
-    @Binding var second: Double
-    var firstLabel = "X"
-    var secondLabel = "Y"
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(firstLabel).foregroundStyle(.secondary)
-            TextField(firstLabel, value: $first, format: .number.precision(.fractionLength(0)))
-                .frame(width: 58).textFieldStyle(.roundedBorder).accessibilityLabel(firstLabel)
-            Text(secondLabel).foregroundStyle(.secondary)
-            TextField(secondLabel, value: $second, format: .number.precision(.fractionLength(0)))
-                .frame(width: 58).textFieldStyle(.roundedBorder).accessibilityLabel(secondLabel)
-        }.font(.caption)
-    }
-}
-
-#Preview("选择 App") {
-    let delegate = ApplicationDelegate()
-    ContentView(model: PackagingModel(defaults: UserDefaults(suiteName: "SwiftyDMG.preview")!), delegate: delegate)
-        .frame(width: 1080, height: 760)
+#Preview("打开 App") {
+    ContentView(model: PackagingModel(defaults: UserDefaults(suiteName: "SwiftyDMG.preview")!), delegate: ApplicationDelegate())
+        .frame(width: 400, height: 300)
 }

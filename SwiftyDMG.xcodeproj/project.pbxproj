@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C30000000000000000000101 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000001 /* WelcomeView.swift */; };
+		C30000000000000000000102 /* WindowSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000002 /* WindowSizing.swift */; };
+		C30000000000000000000103 /* PackagingInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000003 /* PackagingInspector.swift */; };
+		C30000000000000000000104 /* BuildInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000004 /* BuildInspector.swift */; };
 		39A9DF12307FE726004704F3 /* Packager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF03307FE726004704F3 /* Packager.swift */; };
 		39A9DF13307FE726004704F3 /* PackagingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF04307FE726004704F3 /* PackagingOptions.swift */; };
 		39A9DF14307FE726004704F3 /* ProcessExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39A9DF05307FE726004704F3 /* ProcessExecutor.swift */; };
@@ -30,6 +34,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C30000000000000000000001 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		C30000000000000000000002 /* WindowSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSizing.swift; sourceTree = "<group>"; };
+		C30000000000000000000003 /* PackagingInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingInspector.swift; sourceTree = "<group>"; };
+		C30000000000000000000004 /* BuildInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInspector.swift; sourceTree = "<group>"; };
 		000000000000000000000120 /* SwiftyDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftyDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		39A9DF03307FE726004704F3 /* Packager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Packager.swift; sourceTree = "<group>"; };
 		39A9DF04307FE726004704F3 /* PackagingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingOptions.swift; sourceTree = "<group>"; };
@@ -123,6 +131,10 @@
 				39A9DF0C307FE726004704F3 /* Info.plist */,
 				39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */,
 				39A9DF0A307FE726004704F3 /* ContentView.swift */,
+				C30000000000000000000001 /* WelcomeView.swift */,
+				C30000000000000000000002 /* WindowSizing.swift */,
+				C30000000000000000000003 /* PackagingInspector.swift */,
+				C30000000000000000000004 /* BuildInspector.swift */,
 				39A9DF0D307FE726004704F3 /* LayoutPreview.swift */,
 				39A9DF0E307FE726004704F3 /* PackagingModel.swift */,
 				39A9DF10307FE726004704F3 /* UpdateController.swift */,
@@ -258,6 +270,10 @@
 				39A9DF13307FE726004704F3 /* PackagingOptions.swift in Sources */,
 				39A9DF14307FE726004704F3 /* ProcessExecutor.swift in Sources */,
 				39A9DF15307FE726004704F3 /* ContentView.swift in Sources */,
+				C30000000000000000000101 /* WelcomeView.swift in Sources */,
+				C30000000000000000000102 /* WindowSizing.swift in Sources */,
+				C30000000000000000000103 /* PackagingInspector.swift in Sources */,
+				C30000000000000000000104 /* BuildInspector.swift in Sources */,
 				39A9DF16307FE726004704F3 /* LayoutPreview.swift in Sources */,
 				39A9DF17307FE726004704F3 /* PackagingModel.swift in Sources */,
 				39A9DF18307FE726004704F3 /* SwiftyDMGApp.swift in Sources */,

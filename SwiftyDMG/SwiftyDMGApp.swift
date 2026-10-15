@@ -8,12 +8,11 @@ struct SwiftyDMGApp: App {
     var body: some Scene {
         Window("SwiftyDMG", id: "main") {
             ContentView(model: delegate.model, delegate: delegate)
-                .frame(minWidth: 940, minHeight: 640)
         }
-        .defaultSize(width: 1080, height: 760)
+        .defaultSize(width: 400, height: 300)
         .commands {
             CommandGroup(replacing: .newItem) {
-                Button("选择 App…") { delegate.model.chooseApp(); delegate.showMainWindow?() }
+                Button("选择 App…", action: delegate.chooseApp)
                     .keyboardShortcut("o")
                     .disabled(delegate.model.isBuilding)
             }
@@ -37,7 +36,28 @@ struct SwiftyDMGApp: App {
 final class ApplicationDelegate: NSObject, NSApplicationDelegate {
     let model = PackagingModel()
     let updates = UpdateController()
-    var showMainWindow: (() -> Void)?
+    var reopenMainWindow: (() -> Void)?
+    private(set) weak var mainWindow: NSWindow?
+
+    func registerMainWindow(_ window: NSWindow) {
+        mainWindow = window
+    }
+
+    func showMainWindow() {
+        if let mainWindow {
+            if mainWindow.isMiniaturized { mainWindow.deminiaturize(nil) }
+            mainWindow.makeKeyAndOrderFront(nil)
+        } else {
+            // Only ask SwiftUI to open the scene if its window has been closed.
+            reopenMainWindow?()
+        }
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func chooseApp() {
+        showMainWindow()
+        model.chooseApp()
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.servicesProvider = self
@@ -46,6 +66,11 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ application: NSApplication, open urls: [URL]) {
         receive(urls)
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        showMainWindow()
+        return false
     }
 
     @objc func createDMG(_ pasteboard: NSPasteboard, userData: String?, error: AutoreleasingUnsafeMutablePointer<NSString?>) {
@@ -67,9 +92,7 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
     private func receive(_ urls: [URL]) {
         guard let url = urls.first, !model.isBuilding else { return }
         model.selectApp(url)
-        showMainWindow?()
-        NSApp.activate(ignoringOtherApps: true)
-        NSApp.windows.first(where: { $0.title == "SwiftyDMG" })?.makeKeyAndOrderFront(nil)
+        showMainWindow()
     }
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {

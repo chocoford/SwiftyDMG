@@ -26,16 +26,21 @@ final class PackagingModel {
         } else { options = .init() }
     }
 
-    func selectApp(_ url: URL) {
-        guard !isBuilding else { return }
+    @discardableResult
+    func selectApp(_ url: URL) -> Bool {
+        guard !isBuilding else { return false }
         guard url.isFileURL, url.pathExtension.lowercased() == "app" else {
             errorMessage = "请选择一个 .app 文件。"
-            return
+            return false
+        }
+        guard let metadata = NSDictionary(contentsOf: url.appendingPathComponent("Contents/Info.plist")),
+              metadata["CFBundleName"] is String || metadata["CFBundleDisplayName"] is String else {
+            errorMessage = "无法读取这个 App 的 Info.plist，请选择有效的 macOS App。"
+            return false
         }
         sourceURL = url
-        let metadata = NSDictionary(contentsOf: url.appendingPathComponent("Contents/Info.plist"))
-        let name = metadata?["CFBundleDisplayName"] as? String ?? metadata?["CFBundleName"] as? String ?? url.deletingPathExtension().lastPathComponent
-        let version = metadata?["CFBundleShortVersionString"] as? String ?? ""
+        let name = metadata["CFBundleDisplayName"] as? String ?? metadata["CFBundleName"] as? String ?? url.deletingPathExtension().lastPathComponent
+        let version = metadata["CFBundleShortVersionString"] as? String ?? ""
         let filename = [name, version].filter { !$0.isEmpty }.joined(separator: " ").replacingOccurrences(of: "/", with: "-")
         outputURL = url.deletingLastPathComponent().appendingPathComponent(filename + ".dmg")
         resultURL = nil
@@ -43,6 +48,7 @@ final class PackagingModel {
         status = "准备就绪"
         progress = 0
         log = []
+        return true
     }
 
     func chooseApp() {
