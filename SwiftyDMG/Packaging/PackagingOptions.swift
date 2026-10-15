@@ -28,6 +28,7 @@ struct PackagingOptions: Codable, Equatable, Sendable {
     var backgroundURL: URL?
     var diskIcon: AssetMode = .automatic
     var diskIconURL: URL?
+    var volumeName: String?
     var windowWidth: Double = 660
     var windowHeight: Double = 400
     var appX: Double = 180
@@ -41,7 +42,26 @@ struct PackagingOptions: Codable, Equatable, Sendable {
 
     init() {}
 
+    static func defaultVolumeName(for sourceURL: URL?) -> String {
+        guard let sourceURL else { return String(localized: "Disk Image") }
+        let metadata = NSDictionary(contentsOf: sourceURL.appendingPathComponent("Contents/Info.plist"))
+        return metadata?["CFBundleDisplayName"] as? String
+            ?? metadata?["CFBundleName"] as? String
+            ?? sourceURL.deletingPathExtension().lastPathComponent
+    }
+
+    func resolvedVolumeName(for sourceURL: URL?) -> String {
+        let customName = volumeName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return customName.isEmpty ? Self.defaultVolumeName(for: sourceURL) : customName
+    }
+
     func validate() throws {
+        if let volumeName {
+            guard !volumeName.contains("/"), !volumeName.contains(":"),
+                  volumeName.rangeOfCharacter(from: .controlCharacters) == nil else {
+                throw PackagingError.invalid(String(localized: "The volume name cannot contain slashes, colons, or control characters."))
+            }
+        }
         guard windowWidth.isFinite, windowHeight.isFinite,
               (320...4096).contains(windowWidth), (240...4096).contains(windowHeight) else {
             throw PackagingError.invalid(String(localized: "Window width must be 320–4096 and height must be 240–4096."))
@@ -124,6 +144,11 @@ struct PackagingRequest: Sendable {
         }
         let source = sourceURL.resolvingSymlinksInPath().standardizedFileURL.path
         let output = outputURL.resolvingSymlinksInPath().standardizedFileURL.path
+        let filename = outputURL.lastPathComponent
+        if filename.lowercased().hasSuffix(".dmg"),
+           String(filename.dropLast(4)).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            throw PackagingError.invalid(String(localized: "Enter an output file name."))
+        }
         guard outputURL.isFileURL, outputURL.pathExtension.lowercased() == "dmg",
               !output.hasPrefix(source + "/") else {
             throw PackagingError.invalid(String(localized: "The output must be a .dmg file outside the app bundle."))

@@ -47,6 +47,7 @@ actor Packager {
             _ = try await AppDMG.default.createDMG(
                 url: request.sourceURL,
                 to: stagedURL,
+                volumeName: options.resolvedVolumeName(for: request.sourceURL),
                 backgroundImage: background,
                 dmgIcon: icon,
                 windowRect: CGRect(x: 200, y: 200, width: options.windowWidth, height: options.windowHeight),

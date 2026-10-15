@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    ".dmg" : {
+
+    },
     "%@\n\nUnable to clean up the temporary image: %@\nTemporary directory: %@" : {
       "localizations" : {
         "en" : {
@@ -40,16 +43,10 @@
     "Add Applications Link" : {
 
     },
-    "Add Background Image…" : {
-
-    },
-    "Add Content or Assets" : {
-
-    },
-    "Add Disk Icon…" : {
-
-    },
     "Add Files…" : {
+
+    },
+    "Add Image Content" : {
 
     },
     "Add to DMG" : {
@@ -70,10 +67,7 @@
     "Another workspace is creating a DMG. Wait for it to finish and try again." : {
 
     },
-    "App" : {
-
-    },
-    "App not found. Choose it again." : {
+    "App Position" : {
 
     },
     "Appearance" : {
@@ -100,9 +94,6 @@
     "Background" : {
 
     },
-    "Background Image" : {
-
-    },
     "Build" : {
 
     },
@@ -115,19 +106,10 @@
     "Change App…" : {
 
     },
-    "Change the app while keeping the current layout and assets" : {
-
-    },
     "Change…" : {
 
     },
     "Check for Updates…" : {
-
-    },
-    "Choose Background Image…" : {
-
-    },
-    "Choose Disk Icon…" : {
 
     },
     "Choose…" : {
@@ -172,9 +154,6 @@
     "Disk Icon" : {
 
     },
-    "Disk Icon · Automatic" : {
-
-    },
     "Disk Image" : {
 
     },
@@ -196,13 +175,19 @@
     "Enter a signing identity name or SHA-1." : {
 
     },
-    "Export Preset…" : {
+    "Enter an output file name." : {
+
+    },
+    "File Actions" : {
 
     },
     "File Name" : {
 
     },
-    "File not found. Choose it again in the inspector." : {
+    "File not found. Choose a replacement from the context menu." : {
+
+    },
+    "File not found. Use Replace File to locate it." : {
 
     },
     "Finder Service" : {
@@ -229,16 +214,13 @@
     "Image Contents" : {
 
     },
-    "Import Preset…" : {
-
-    },
     "Inspector" : {
 
     },
     "Invalid or duplicate additional file name: %@" : {
 
     },
-    "Link" : {
+    "Link Position" : {
 
     },
     "Logs" : {
@@ -250,22 +232,16 @@
     "Move SwiftyDMG to the Applications folder and launch it once. Then select an app in Finder and choose Services → Create DMG with SwiftyDMG from its context menu." : {
 
     },
-    "New Workspace from App" : {
-
-    },
-    "New Workspace from App…" : {
+    "New Window" : {
 
     },
     "No Background" : {
 
     },
-    "No Disk Icon" : {
+    "No Folder Selected" : {
 
     },
     "No Logs Yet" : {
-
-    },
-    "No Output Selected" : {
 
     },
     "No valid Developer ID or development signing certificate was found. Specify an identity or choose None." : {
@@ -283,16 +259,25 @@
     "Only the generated DMG is signed." : {
 
     },
+    "Open App" : {
+
+    },
+    "Open App…" : {
+
+    },
+    "Open Save Location in Finder" : {
+
+    },
     "Open…" : {
 
     },
     "Output" : {
 
     },
-    "Preparing" : {
+    "Position" : {
 
     },
-    "Presets" : {
+    "Preparing" : {
 
     },
     "Preview Zoom" : {
@@ -304,16 +289,19 @@
     "Remove" : {
 
     },
-    "Remove %@" : {
-
-    },
-    "Remove Background" : {
-
-    },
     "Remove Link" : {
 
     },
     "Remove Selected Item" : {
+
+    },
+    "Rename" : {
+
+    },
+    "Rename File" : {
+
+    },
+    "Rename…" : {
 
     },
     "Replace" : {
@@ -322,10 +310,22 @@
     "Replace Existing DMG?" : {
 
     },
-    "Reset to Defaults" : {
+    "Replace File" : {
+
+    },
+    "Replace File…" : {
+
+    },
+    "Reset File Name" : {
+
+    },
+    "Reset to the app name and version" : {
 
     },
     "Save DMG" : {
+
+    },
+    "Save Location" : {
 
     },
     "Saved: %@" : {
@@ -385,6 +385,12 @@
     "Specific Identity" : {
 
     },
+    "SwiftyDMG" : {
+
+    },
+    "The .dmg extension is added automatically." : {
+
+    },
     "The app and assets in a workspace must refer to local files." : {
 
     },
@@ -397,10 +403,19 @@
     "The image could not be read. Select a valid image file." : {
 
     },
+    "The name shown when the disk image is mounted. Leave blank to use the app name." : {
+
+    },
     "The output already exists. Confirm replacement or choose another file name." : {
 
     },
     "The output must be a .dmg file outside the app bundle." : {
+
+    },
+    "The volume name cannot contain slashes, colons, or control characters." : {
+
+    },
+    "This changes the name inside the disk image. The original file is not renamed." : {
 
     },
     "This workspace file version is not supported." : {
@@ -421,10 +436,7 @@
     "Updates are not enabled in this build." : {
 
     },
-    "Use App Name and Version" : {
-
-    },
-    "Use Default Background" : {
+    "Volume Name" : {
 
     },
     "W" : {

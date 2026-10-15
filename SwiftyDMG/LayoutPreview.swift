@@ -76,7 +76,7 @@ struct LayoutPreview: View {
             let fit = max(0.05, min(1, (geometry.size.width - 64) / width, (geometry.size.height - 64) / height))
             let scale = zoom.scale ?? fit
             ScrollView([.horizontal, .vertical]) {
-                FinderWindowPreview(title: sourceURL?.deletingPathExtension().lastPathComponent ?? String(localized: "Disk Image"), titleHeight: titleHeight) {
+                FinderWindowPreview(title: options.resolvedVolumeName(for: sourceURL), titleHeight: titleHeight) {
                     ZStack(alignment: .topLeading) {
                         Color.white
                         if let backgroundImage {

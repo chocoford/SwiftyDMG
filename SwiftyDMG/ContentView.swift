@@ -72,6 +72,7 @@ struct ContentView: View {
                     Button { model.startBuild() } label: {
                         if model.isBuilding {
                             ProgressView()
+                                .controlSize(.small)
                         } else {
                             Label("Create DMG", systemImage: "play.fill")
                         }
@@ -160,12 +161,7 @@ private struct PackagingWorkspace: View {
     @State private var selection: WorkspaceItem? = .app
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            WorkspaceSidebar(model: model, selection: $selection)
-                .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 300)
-        } detail: {
-            PreviewCanvas(options: $model.options, sourceURL: model.sourceURL, isBuilding: model.isBuilding)
-        }
+        workspaceContent
         .inspector(isPresented: $inspectorPresented) {
             VStack(spacing: 0) {
                 InspectorTabPicker(selection: $inspectorTab)
@@ -185,6 +181,20 @@ private struct PackagingWorkspace: View {
                 inspectorPresented = true
             }
         }
+    }
+
+    @ViewBuilder
+    private var workspaceContent: some View {
+        #if SWIFTYDMG_SIDEBAR
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            WorkspaceSidebar(model: model, selection: $selection)
+                .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 300)
+        } detail: {
+            PreviewCanvas(options: $model.options, sourceURL: model.sourceURL, isBuilding: model.isBuilding)
+        }
+        #else
+        PreviewCanvas(options: $model.options, sourceURL: model.sourceURL, isBuilding: model.isBuilding)
+        #endif
     }
 }
 

@@ -8,35 +8,7 @@ struct PackagingSettingsView: View {
     var body: some View {
         ScrollViewReader { proxy in
             Form {
-                Section {
-                    if let source = model.sourceURL {
-                        HStack(spacing: 10) {
-                            Image(nsImage: NSWorkspace.shared.icon(forFile: source.path)).resizable().frame(width: 32, height: 32)
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(source.lastPathComponent).fontWeight(.medium).lineLimit(1)
-                                Text(source.deletingLastPathComponent().path).font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
-                            }.frame(maxWidth: .infinity, alignment: .leading)
-                            Button("Change…", action: model.chooseApp)
-                                .help("Change the app while keeping the current layout and assets")
-                        }.help(source.path)
-                        if !FileManager.default.fileExists(atPath: source.path) {
-                            Label("App not found. Choose it again.", systemImage: "exclamationmark.triangle")
-                                .font(.caption).foregroundStyle(.orange)
-                        }
-                    }
-                }.id("app")
-                Section("Output") {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(model.outputURL?.lastPathComponent ?? String(localized: "No Output Selected")).lineLimit(2).textSelection(.enabled)
-                        HStack(alignment: .top) {
-                            Text(model.outputURL?.deletingLastPathComponent().path ?? "")
-                                .font(.caption).foregroundStyle(.secondary).lineLimit(2).truncationMode(.middle)
-                            Spacer(minLength: 4)
-                            Button("Change…", action: model.chooseOutput)
-                        }
-                    }
-                    Toggle("Use App Name and Version", isOn: $model.usesAutomaticOutputName)
-                }
+                OutputSettingsSection(model: model)
                 Section("Appearance") {
                     Picker("Background", selection: $model.options.background) {
                         Text("Default Background").tag(AssetMode.automatic)
@@ -54,32 +26,46 @@ struct PackagingSettingsView: View {
                     if model.options.diskIcon == .custom {
                         InspectorAssetRow(url: model.options.diskIconURL) { model.chooseImage(forBackground: false) }
                     }
-                }.id("appearance")
+                }
                 Section("Finder Window") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Volume Name").fontWeight(.medium)
+                        TextField("Volume Name", text: Binding(
+                            get: { model.options.volumeName ?? "" },
+                            set: { model.options.volumeName = $0.isEmpty ? nil : $0 }
+                        ), prompt: Text(PackagingOptions.defaultVolumeName(for: model.sourceURL)))
+                        .labelsHidden()
+                        .textFieldStyle(.roundedBorder)
+                        .help("The name shown when the disk image is mounted. Leave blank to use the app name.")
+                        .accessibilityIdentifier("volumeNameField")
+                    }
+                    .controlSize(.regular)
+                    .padding(.vertical, 8)
                     LabeledContent("Size") {
                         CoordinateFields(first: $model.options.windowWidth, second: $model.options.windowHeight, firstLabel: "W", secondLabel: "H")
                     }
-                    LabeledContent("App") { CoordinateFields(first: $model.options.appX, second: $model.options.appY) }
+                    #if SWIFTYDMG_SIDEBAR
+                    selectedItemPosition
+                    #else
+                    PositionSettingsRow(
+                        title: "App Position", x: $model.options.appX, y: $model.options.appY,
+                        resetTitle: "Reset App Position", resetIdentifier: "resetAppPositionButton",
+                        reset: model.resetAppPosition
+                    )
                     Toggle("Applications Link", isOn: $model.options.includeApplications)
                     if model.options.includeApplications {
-                        LabeledContent("Link") { CoordinateFields(first: $model.options.applicationsX, second: $model.options.applicationsY) }
+                        PositionSettingsRow(
+                            title: "Link Position", x: $model.options.applicationsX, y: $model.options.applicationsY,
+                            resetTitle: "Reset Link Position", resetIdentifier: "resetLinkPositionButton",
+                            reset: model.resetApplicationsPosition
+                        )
                     }
+                    #endif
                 }.id("layout")
-                Section("Additional Files") {
-                    ForEach($model.options.extraItems) { $item in
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                TextField("File Name", text: $item.name)
-                                Button {
-                                    model.options.extraItems.removeAll { $0.id == item.id }
-                                } label: { Image(systemName: "minus.circle") }
-                                .buttonStyle(.borderless).help("Remove \(item.name)")
-                            }
-                            CoordinateFields(first: $item.x, second: $item.y)
-                        }.id("extra-\(item.id.uuidString)")
-                    }
-                    Button(action: model.addFiles) { Label("Add Files…", systemImage: "plus") }
-                }
+                #if !SWIFTYDMG_SIDEBAR && SWIFTYDMG_ADDITIONAL_FILES
+                AdditionalFilesSettingsSection(model: model)
+                #endif
+                #if SWIFTYDMG_DMG_SIGNING
                 Section("DMG Signing") {
                     Picker("Signing", selection: $model.options.signing) {
                         Text("None").tag(SigningMode.none)
@@ -91,15 +77,188 @@ struct PackagingSettingsView: View {
                     }
                     Text("Only the generated DMG is signed.").font(.caption).foregroundStyle(.secondary)
                 }
+                #endif
             }
             .formStyle(.grouped)
             .scrollContentBackground(.hidden)
             .controlSize(.small)
             .disabled(model.isBuilding)
-            .onChange(of: selection, initial: true) { _, selected in
-                if let selected { proxy.scrollTo(selected.inspectorAnchor, anchor: .top) }
+            .onChange(of: selection) { _, selected in
+                if selected != nil { proxy.scrollTo("layout", anchor: .top) }
             }
         }
+    }
+
+    @ViewBuilder
+    private var selectedItemPosition: some View {
+        switch selection {
+        case .app:
+            PositionSettingsRow(
+                title: "Position", x: $model.options.appX, y: $model.options.appY,
+                resetTitle: "Reset App Position", resetIdentifier: "resetAppPositionButton",
+                reset: model.resetAppPosition
+            )
+        case .applications:
+            if model.options.includeApplications {
+                PositionSettingsRow(
+                    title: "Position", x: $model.options.applicationsX, y: $model.options.applicationsY,
+                    resetTitle: "Reset Link Position", resetIdentifier: "resetLinkPositionButton",
+                    reset: model.resetApplicationsPosition
+                )
+            }
+        case .extra(let id):
+            ForEach($model.options.extraItems) { $item in
+                if item.id == id {
+                    LabeledContent("Position") { CoordinateFields(first: $item.x, second: $item.y) }
+                }
+            }
+        case nil:
+            EmptyView()
+        }
+    }
+}
+
+#if !SWIFTYDMG_SIDEBAR && SWIFTYDMG_ADDITIONAL_FILES
+private struct AdditionalFilesSettingsSection: View {
+    @Bindable var model: PackagingModel
+
+    var body: some View {
+        Section("Additional Files") {
+            ForEach($model.options.extraItems) { $item in
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(spacing: 8) {
+                        TextField("File Name", text: $item.name)
+                            .labelsHidden().textFieldStyle(.roundedBorder)
+                        Menu {
+                            Button("Replace File…") { model.replaceFile(item.id) }
+                            Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([item.url]) }
+                            Divider()
+                            Button("Remove", role: .destructive) {
+                                model.options.extraItems.removeAll { $0.id == item.id }
+                            }
+                        } label: { Label("File Actions", systemImage: "ellipsis") }
+                        .labelStyle(.iconOnly)
+                        .menuIndicator(.hidden)
+                        .help("File Actions")
+                    }
+                    LabeledContent("Position") { CoordinateFields(first: $item.x, second: $item.y) }
+                    if !FileManager.default.fileExists(atPath: item.url.path) {
+                        Label("File not found. Use Replace File to locate it.", systemImage: "exclamationmark.triangle")
+                            .font(.caption).foregroundStyle(.orange)
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+            Button(action: model.addFiles) { Label("Add Files…", systemImage: "plus") }
+        }
+        .controlSize(.regular)
+    }
+}
+#endif
+
+private struct OutputSettingsSection: View {
+    @Bindable var model: PackagingModel
+
+    private var directoryURL: URL? {
+        model.outputURL?.deletingLastPathComponent()
+    }
+
+    private var directoryPath: String {
+        directoryURL?.path ?? String(localized: "No Folder Selected")
+    }
+
+    var body: some View {
+        Section("Output") {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("File Name").fontWeight(.medium)
+                    Spacer(minLength: 12)
+                    InspectorResetButton(title: "Reset File Name", action: model.resetOutputName)
+                        .help("Reset to the app name and version")
+                        .disabled(model.sourceURL == nil)
+                        .accessibilityIdentifier("resetOutputNameButton")
+                }
+                HStack(spacing: 8) {
+                    TextField("File Name", text: $model.outputName)
+                        .labelsHidden()
+                        .textFieldStyle(.roundedBorder)
+                        .help("The .dmg extension is added automatically.")
+                        .accessibilityIdentifier("outputNameField")
+                    Text(".dmg").foregroundStyle(.secondary)
+                }
+            }
+            .padding(.vertical, 8)
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Save Location").fontWeight(.medium)
+                    Spacer(minLength: 12)
+                    Button("Change…", action: model.chooseOutput)
+                }
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "folder")
+                        .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
+                    Text(directoryPath)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(3)
+                        .truncationMode(.middle)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .help(directoryPath)
+                    Button("Open Save Location in Finder", systemImage: "arrow.right.circle.fill") {
+                        guard let directoryURL else { return }
+                        NSWorkspace.shared.open(directoryURL)
+                    }
+                    .labelStyle(.iconOnly)
+                    .buttonStyle(.borderless)
+                    .controlSize(.small)
+                    .imageScale(.small)
+                    .help("Open Save Location in Finder")
+                    .disabled(directoryURL == nil)
+                    .accessibilityIdentifier("openOutputFolderButton")
+                }
+            }
+            .padding(.vertical, 8)
+        }
+        .controlSize(.regular)
+    }
+}
+
+private struct InspectorResetButton: View {
+    let title: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) { Label(title, systemImage: "arrow.counterclockwise") }
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+            .controlSize(.small)
+            .imageScale(.small)
+    }
+}
+
+private struct PositionSettingsRow: View {
+    let title: LocalizedStringKey
+    @Binding var x: Double
+    @Binding var y: Double
+    let resetTitle: LocalizedStringKey
+    let resetIdentifier: String
+    let reset: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text(title).fontWeight(.medium)
+                Spacer(minLength: 12)
+                InspectorResetButton(title: resetTitle, action: reset)
+                    .help(resetTitle)
+                    .accessibilityIdentifier(resetIdentifier)
+            }
+            CoordinateFields(first: $x, second: $y)
+        }
+        .padding(.vertical, 8)
     }
 }
 

@@ -16,11 +16,21 @@ final class PackagingModel {
     }
     var sourceURL: URL? { workspace.sourceURL }
     var outputURL: URL? { workspace.outputURL }
-    var usesAutomaticOutputName: Bool {
-        get { workspace.usesAutomaticOutputName }
+    var outputName: String {
+        get {
+            guard let filename = outputURL?.lastPathComponent else { return "" }
+            return filename.lowercased().hasSuffix(".dmg") ? String(filename.dropLast(4)) : filename
+        }
         set {
-            workspace.usesAutomaticOutputName = newValue
-            if newValue { refreshAutomaticOutputName() }
+            guard !isBuilding, let outputURL,
+                  !newValue.contains("/"), !newValue.contains(":"),
+                  newValue.rangeOfCharacter(from: .controlCharacters) == nil else { return }
+            let name = newValue.lowercased().hasSuffix(".dmg") ? String(newValue.dropLast(4)) : newValue
+            guard name != outputName else { return }
+            var updated = workspace
+            updated.outputURL = outputURL.deletingLastPathComponent().appendingPathComponent(name + ".dmg")
+            updated.usesAutomaticOutputName = false
+            workspace = updated
         }
     }
     private(set) var isBuilding = false
@@ -75,6 +85,30 @@ final class PackagingModel {
         if workspace.outputURL != refreshed { workspace.outputURL = refreshed }
     }
 
+    func resetOutputName() {
+        guard !isBuilding else { return }
+        workspace.usesAutomaticOutputName = true
+        refreshAutomaticOutputName()
+    }
+
+    func resetAppPosition() {
+        guard !isBuilding else { return }
+        let defaults = PackagingOptions()
+        var updated = options
+        updated.appX = min(defaults.appX, max(0, updated.windowWidth))
+        updated.appY = min(defaults.appY, max(0, updated.windowHeight))
+        options = updated
+    }
+
+    func resetApplicationsPosition() {
+        guard !isBuilding else { return }
+        let defaults = PackagingOptions()
+        var updated = options
+        updated.applicationsX = min(defaults.applicationsX, max(0, updated.windowWidth))
+        updated.applicationsY = min(defaults.applicationsY, max(0, updated.windowHeight))
+        options = updated
+    }
+
     private func outputFilename(for url: URL, metadata: NSDictionary) -> String {
         let name = metadata["CFBundleDisplayName"] as? String ?? metadata["CFBundleName"] as? String ?? url.deletingPathExtension().lastPathComponent
         let version = metadata["CFBundleShortVersionString"] as? String ?? ""
@@ -107,8 +141,8 @@ final class PackagingModel {
         panel.canCreateDirectories = true
         if panel.runModal() == .OK, let url = panel.url {
             var updated = workspace
+            updated.usesAutomaticOutputName = workspace.usesAutomaticOutputName && url.lastPathComponent == outputURL?.lastPathComponent
             updated.outputURL = url
-            updated.usesAutomaticOutputName = false
             workspace = updated
         }
     }
@@ -134,6 +168,33 @@ final class PackagingModel {
         if panel.runModal() == .OK {
             options.extraItems += panel.urls.map { ExtraItem(url: $0, x: options.windowWidth / 2, y: options.windowHeight * 0.75) }
         }
+    }
+
+    func renameFile(_ id: UUID) {
+        guard !isBuilding, let item = options.extraItems.first(where: { $0.id == id }) else { return }
+        let nameField = NSTextField(string: item.name)
+        nameField.frame = NSRect(x: 0, y: 0, width: 280, height: 24)
+        let alert = NSAlert()
+        alert.messageText = String(localized: "Rename File")
+        alert.informativeText = String(localized: "This changes the name inside the disk image. The original file is not renamed.")
+        alert.accessoryView = nameField
+        alert.addButton(withTitle: String(localized: "Rename"))
+        alert.addButton(withTitle: String(localized: "Cancel"))
+        alert.window.initialFirstResponder = nameField
+        guard alert.runModal() == .alertFirstButtonReturn,
+              !isBuilding, let index = options.extraItems.firstIndex(where: { $0.id == id }) else { return }
+        options.extraItems[index].name = nameField.stringValue
+    }
+
+    func replaceFile(_ id: UUID) {
+        guard !isBuilding, let item = options.extraItems.first(where: { $0.id == id }) else { return }
+        let panel = NSOpenPanel()
+        panel.title = String(localized: "Replace File")
+        panel.directoryURL = item.url.deletingLastPathComponent()
+        panel.canChooseDirectories = true
+        guard panel.runModal() == .OK, let url = panel.url,
+              !isBuilding, let index = options.extraItems.firstIndex(where: { $0.id == id }) else { return }
+        options.extraItems[index].url = url
     }
 
     func startBuild(replaceExisting: Bool = false) {

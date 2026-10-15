@@ -39,10 +39,25 @@ final class PackagingTests: XCTestCase {
         var options = PackagingOptions()
         options.windowWidth = 800
         options.appX = 220
+        options.volumeName = "Example Installer"
         options.signing = .identity
         options.signingIdentity = "Developer ID Application: Example"
         let decoded = try JSONDecoder().decode(PackagingOptions.self, from: JSONEncoder().encode(options))
         XCTAssertEqual(decoded, options)
+    }
+
+    func testLegacyOptionsKeepAutomaticVolumeName() throws {
+        let data = try JSONEncoder().encode(PackagingOptions())
+        var legacy = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        legacy.removeValue(forKey: "volumeName")
+        let decoded = try JSONDecoder().decode(PackagingOptions.self, from: JSONSerialization.data(withJSONObject: legacy))
+        XCTAssertNil(decoded.volumeName)
+
+        let fixture = try fixture()
+        defer { try? FileManager.default.removeItem(at: fixture.directory) }
+        let renamedApp = fixture.directory.appendingPathComponent("Renamed.app")
+        try FileManager.default.moveItem(at: fixture.app, to: renamedApp)
+        XCTAssertEqual(decoded.resolvedVolumeName(for: renamedApp), "Example App")
     }
 
     func testRejectsInvalidLayout() {
@@ -89,6 +104,7 @@ final class PackagingTests: XCTestCase {
         try Data("Hello from SwiftyDMG".utf8).write(to: readme)
         var options = PackagingOptions()
         options.diskIcon = .none
+        options.volumeName = "Example Installer"
         options.extraItems = [ExtraItem(url: readme)]
         let output = fixture.directory.appendingPathComponent("Example App.dmg")
         _ = try await Packager().build(.init(sourceURL: fixture.app, outputURL: output, options: options))
@@ -100,7 +116,9 @@ final class PackagingTests: XCTestCase {
         let mount = URL(fileURLWithPath: entities.compactMap { $0["mount-point"] as? String }.first!)
         let checks = [fixture.app.lastPathComponent, "Applications", ".DS_Store", ".background/dmg-background.tiff", readme.lastPathComponent]
         let present = checks.map { FileManager.default.fileExists(atPath: mount.appendingPathComponent($0).path) }
+        let mountedVolumeName = try? mount.resourceValues(forKeys: [.volumeNameKey]).volumeName
         _ = try await ProcessExecutor.run("/usr/bin/hdiutil", arguments: ["detach", mount.path])
+        XCTAssertEqual(mountedVolumeName, options.volumeName)
         XCTAssertTrue(present.allSatisfy { $0 }, "Missing image contents: \(zip(checks, present).filter { !$0.1 }.map { $0.0 })")
         XCTAssertFalse(try FileManager.default.contentsOfDirectory(atPath: fixture.directory.path).contains { $0.hasPrefix(".SwiftyDMG-") })
     }

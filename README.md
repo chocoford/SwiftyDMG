@@ -31,37 +31,66 @@ sentences, preserving interpolated file names and paths as user content.
 ## Features
 
 - Select an App, drag it into the window, or open it through a Finder service.
-- Customize background, disk icon, Finder window size and draggable icon positions.
-- Add files and an Applications link to the image.
-- Save independent `.swiftydmg` workspaces and import or export JSON presets.
-- Browse image contents and appearance assets in a sidebar, with settings in the inspector.
+- Customize volume name, background, disk icon, Finder window size and draggable icon positions.
+- Configure the Applications link in the image.
+- Open independent packaging windows, with layout and appearance settings in the inspector.
 - Observe packaging progress, inspect errors and reveal the completed DMG.
-- Optionally sign the generated DMG without modifying the input App's signature.
 - Check for updates through Sparkle and GitHub Releases once release signing is configured.
 
 Packaging first creates a temporary image beside the destination. It replaces an
 existing output only after confirmation and a successful build. Failed jobs clean
 up their own mounts and leave the previous output intact.
 
-## Workspaces
+## Packaging windows
 
-Each document window owns its App, output destination, layout, assets and build log.
-Use **File → New** for an empty workspace, **Open** (⌘O) for a saved `.swiftydmg`
-document, or **New Workspace from App…** (⇧⌘O) to start another workspace from an App.
-The welcome window's Open button fills that same window. To replace an App in an
-existing workspace, use **Change…** beside the App in the inspector; layout and asset
-settings are preserved.
+Each window owns its App, output destination, layout, assets and build log for the
+current session. Use **File → New Window** (⌘N) for an empty window or **Open App…**
+(⌘O) to select an App. The welcome window's Open button fills that same window.
+To package another App, close the current window and open another one.
 
-Save a workspace with ⌘S and reopen it for subsequent releases. Automatic output
-naming follows the App's current name and version while preserving the output
-directory. Selecting a custom output filename disables automatic naming until
-the inspector option is re-enabled.
+Set **Volume Name** under **Finder Window** to change the mounted disk's name and
+preview title. Leave it blank to use the App's name. The volume name is independent
+of the output `.dmg` filename.
 
-Workspace documents store configuration and local file references, including
-bookmarks for moved files. They do not embed the App or asset contents. Missing
-references can be repaired in the inspector. Document saving is separate from
-exporting a DMG. Builds share a single execution gate while the AppDMG backend
-uses shared mutable state; other document windows remain editable.
+Automatic output naming follows the App's current name and version while preserving the output
+directory. Edit the output filename directly in the inspector; the `.dmg` suffix
+is kept automatically. Custom filenames are preserved until the reset button next
+to **File Name** restores the App's name and version. Changing only the output
+directory preserves the current naming mode.
+
+Builds share a single execution gate while the AppDMG backend uses shared mutable
+state; other windows remain editable.
+
+## Optional features
+
+The first release disables the sidebar and workspace saving, and hides the
+Additional Files and DMG Signing inspector sections. Their gates live in
+`Configuration/Release.xcconfig` and apply to Debug and Release. Empty values disable
+them; enable each independently by setting its value to the matching token:
+
+```xcconfig
+SWIFTYDMG_SIDEBAR = SWIFTYDMG_SIDEBAR
+SWIFTYDMG_WORKSPACE_SAVING = SWIFTYDMG_WORKSPACE_SAVING
+SWIFTYDMG_ADDITIONAL_FILES = SWIFTYDMG_ADDITIONAL_FILES
+SWIFTYDMG_DMG_SIGNING = SWIFTYDMG_DMG_SIGNING
+```
+
+The sidebar gate moves file management from the inspector into a contents sidebar.
+The saving gate switches from a regular WindowGroup to DocumentGroup, enables
+New/Open/Save/Recent and the Presets menu, and registers `.swiftydmg` documents.
+With saving disabled, there is no document edited state or save prompt on close.
+Info.plist preprocessing shares the same saving gate so document registration
+matches the active scene.
+
+The additional-files gate shows its inspector section when the sidebar is off.
+The signing gate shows DMG signing settings. Their packaging implementations remain
+available, including support for previously configured options.
+
+When saving is enabled, use ⌘S to save settings for subsequent releases. Documents
+store configuration and local file references, including bookmarks for moved files;
+they do not embed the App or asset contents. JSON presets can also be imported or
+exported. When the sidebar is enabled, use its context menus to change an App, rename
+or replace additional files, and select an item to edit its position in the inspector.
 
 ## Build and test
 

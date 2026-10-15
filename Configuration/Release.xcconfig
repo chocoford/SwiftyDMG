@@ -2,6 +2,20 @@
 MARKETING_VERSION = 2.0.0
 CURRENT_PROJECT_VERSION = 20000
 
+// Optional first-release features. Leave empty to disable; use the indicated token to enable.
+// Set the value to SWIFTYDMG_SIDEBAR to enable the sidebar.
+SWIFTYDMG_SIDEBAR =
+// Set the value to SWIFTYDMG_WORKSPACE_SAVING to enable workspace documents and presets.
+SWIFTYDMG_WORKSPACE_SAVING =
+// Set the value to SWIFTYDMG_ADDITIONAL_FILES to show additional-file settings.
+SWIFTYDMG_ADDITIONAL_FILES =
+// Set the value to SWIFTYDMG_DMG_SIGNING to show DMG signing settings.
+SWIFTYDMG_DMG_SIGNING =
+SWIFTYDMG_OPTIONAL_FEATURES = $(SWIFTYDMG_SIDEBAR) $(SWIFTYDMG_WORKSPACE_SAVING) $(SWIFTYDMG_ADDITIONAL_FILES) $(SWIFTYDMG_DMG_SIGNING)
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) $(SWIFTYDMG_OPTIONAL_FEATURES)
+INFOPLIST_PREPROCESS = YES
+INFOPLIST_PREPROCESSOR_DEFINITIONS = $(inherited) $(SWIFTYDMG_WORKSPACE_SAVING)
+
 // $() prevents xcconfig from interpreting the HTTPS slashes as a comment.
 SPARKLE_FEED_URL = https:/$()/github.com/chocoford/SwiftyDMG/releases/latest/download/appcast.xml
 // Add only the public Ed25519 key when configuring the first signed release.

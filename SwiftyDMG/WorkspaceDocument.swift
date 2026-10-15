@@ -127,7 +127,7 @@ struct WorkspaceDocumentView: View {
         }
         if document.workspace != model.workspace { document.workspace = model.workspace }
         let newDocumentAction = newDocument
-        delegate.connectDocumentCreation { workspace in
+        delegate.connectWorkspaceCreation { workspace in
             newDocumentAction(WorkspaceDocument(workspace: workspace))
         }
     }

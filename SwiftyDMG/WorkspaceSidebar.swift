@@ -2,17 +2,8 @@ import AppKit
 import SwiftUI
 
 enum WorkspaceItem: Hashable {
-    case app, applications, background, diskIcon
+    case app, applications
     case extra(UUID)
-
-    var inspectorAnchor: String {
-        switch self {
-        case .app: "app"
-        case .applications: "layout"
-        case .background, .diskIcon: "appearance"
-        case .extra(let id): "extra-\(id.uuidString)"
-        }
-    }
 }
 
 struct WorkspaceSidebar: View {
@@ -39,25 +30,12 @@ struct WorkspaceSidebar: View {
                     SidebarFileRow(name: item.name, url: item.url)
                         .tag(WorkspaceItem.extra(item.id))
                         .contextMenu {
+                            Button("Rename…") { model.renameFile(item.id) }.disabled(model.isBuilding)
+                            Button("Replace File…") { model.replaceFile(item.id) }.disabled(model.isBuilding)
                             Button("Remove") { removeExtra(item.id) }.disabled(model.isBuilding)
                             Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([item.url]) }
                         }
                 }
-            }
-            Section("Appearance") {
-                Label(backgroundTitle, systemImage: "photo")
-                    .tag(WorkspaceItem.background)
-                    .contextMenu {
-                        Button("Choose Background Image…") { model.chooseImage(forBackground: true) }.disabled(model.isBuilding)
-                        Button("Use Default Background") { model.options.background = .automatic }.disabled(model.isBuilding)
-                        Button("Remove Background") { model.options.background = .none }.disabled(model.isBuilding)
-                    }
-                Label(diskIconTitle, systemImage: "externaldrive")
-                    .tag(WorkspaceItem.diskIcon)
-                    .contextMenu {
-                        Button("Choose Disk Icon…") { model.chooseImage(forBackground: false) }.disabled(model.isBuilding)
-                        Button("Generate from App") { model.options.diskIcon = .automatic }.disabled(model.isBuilding)
-                    }
             }
         }
         .listStyle(.sidebar)
@@ -68,8 +46,6 @@ struct WorkspaceSidebar: View {
                 HStack {
                     Menu {
                         Button("Add Files…", action: model.addFiles)
-                        Button("Add Background Image…") { model.chooseImage(forBackground: true); selection = .background }
-                        Button("Add Disk Icon…") { model.chooseImage(forBackground: false); selection = .diskIcon }
                         if !model.options.includeApplications {
                             Button("Add Applications Link") { model.options.includeApplications = true }
                         }
@@ -77,7 +53,7 @@ struct WorkspaceSidebar: View {
                     .menuStyle(.borderlessButton)
                     .menuIndicator(.hidden)
                     .fixedSize()
-                    .help("Add Content or Assets")
+                    .help("Add Image Content")
                     .disabled(model.isBuilding)
                     Spacer()
                     Button(action: removeSelection) { Image(systemName: "minus") }
@@ -90,26 +66,10 @@ struct WorkspaceSidebar: View {
         .accessibilityIdentifier("workspaceSidebar")
     }
 
-    private var backgroundTitle: String {
-        switch model.options.background {
-        case .automatic: String(localized: "Default Background")
-        case .custom: model.options.backgroundURL?.lastPathComponent ?? String(localized: "Background Image")
-        case .none: String(localized: "No Background")
-        }
-    }
-
-    private var diskIconTitle: String {
-        switch model.options.diskIcon {
-        case .automatic: String(localized: "Disk Icon · Automatic")
-        case .custom: model.options.diskIconURL?.lastPathComponent ?? String(localized: "Disk Icon")
-        case .none: String(localized: "No Disk Icon")
-        }
-    }
-
     private var canRemoveSelection: Bool {
         guard let selection else { return false }
         switch selection {
-        case .applications, .background, .diskIcon, .extra: return true
+        case .applications, .extra: return true
         case .app: return false
         }
     }
@@ -118,8 +78,6 @@ struct WorkspaceSidebar: View {
         guard !model.isBuilding, let selection else { return }
         switch selection {
         case .applications: removeApplications()
-        case .background: model.options.background = .none
-        case .diskIcon: model.options.diskIcon = .none
         case .extra(let id): removeExtra(id)
         case .app: break
         }
@@ -146,7 +104,7 @@ private struct SidebarFileRow: View {
             Text(name).lineLimit(1).truncationMode(.middle)
             Spacer(minLength: 0)
             if !FileManager.default.fileExists(atPath: url.path) {
-                Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange).help("File not found. Choose it again in the inspector.")
+                Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange).help("File not found. Choose a replacement from the context menu.")
             }
         }.help(url.path)
     }
