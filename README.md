@@ -34,6 +34,7 @@ sentences, preserving interpolated file names and paths as user content.
 - Customize volume name, background, disk icon, Finder window size and draggable icon positions.
 - Configure the Applications link in the image.
 - Open independent packaging windows, with layout and appearance settings in the inspector.
+- Preview System, Light and Dark appearances from the canvas appearance menu.
 - Observe packaging progress, inspect errors and reveal the completed DMG.
 - Check for updates through Sparkle and GitHub Releases once release signing is configured.
 
@@ -51,6 +52,10 @@ To package another App, close the current window and open another one.
 Set **Volume Name** under **Finder Window** to change the mounted disk's name and
 preview title. Leave it blank to use the App's name. The volume name is independent
 of the output `.dmg` filename.
+
+The appearance menu beside preview zoom offers **System**, **Light** and **Dark**.
+It changes only the preview. Picture backgrounds keep their original colors;
+**No Background** uses the native Finder appearance.
 
 Automatic output naming follows the App's current name and version while preserving the output
 directory. Edit the output filename directly in the inspector; the `.dmg` suffix

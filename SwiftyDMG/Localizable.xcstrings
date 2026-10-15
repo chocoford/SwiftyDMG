@@ -112,6 +112,9 @@
     "Check for Updates…" : {
 
     },
+    "Choose the preview appearance. Background images retain their original colors." : {
+
+    },
     "Choose…" : {
 
     },
@@ -146,6 +149,9 @@
 
     },
     "Custom Image" : {
+
+    },
+    "Dark" : {
 
     },
     "Default Background" : {
@@ -220,6 +226,9 @@
     "Invalid or duplicate additional file name: %@" : {
 
     },
+    "Light" : {
+
+    },
     "Link Position" : {
 
     },
@@ -278,6 +287,9 @@
 
     },
     "Preparing" : {
+
+    },
+    "Preview Appearance" : {
 
     },
     "Preview Zoom" : {
@@ -386,6 +398,9 @@
 
     },
     "SwiftyDMG" : {
+
+    },
+    "System" : {
 
     },
     "The .dmg extension is added automatically." : {

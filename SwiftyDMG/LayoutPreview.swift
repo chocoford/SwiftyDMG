@@ -23,23 +23,68 @@ enum PreviewZoom: String, CaseIterable, Identifiable {
     }
 }
 
+enum PreviewAppearance: String, CaseIterable, Identifiable {
+    case system, light, dark
+    var id: Self { self }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .system: "circle.lefthalf.filled"
+        case .light: "sun.max"
+        case .dark: "moon"
+        }
+    }
+
+    func colorScheme(following system: ColorScheme) -> ColorScheme {
+        switch self {
+        case .system: system
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+}
+
 struct PreviewCanvas: View {
+    @Environment(\.colorScheme) private var systemColorScheme
     @Binding var options: PackagingOptions
     let sourceURL: URL?
     let isBuilding: Bool
     @State private var zoom = PreviewZoom.fit
+    @State private var appearance = PreviewAppearance.system
 
     var body: some View {
         VStack(spacing: 0) {
             LayoutPreview(options: $options, sourceURL: sourceURL, zoom: zoom)
+                .environment(\.colorScheme, appearance.colorScheme(following: systemColorScheme))
                 .disabled(isBuilding)
-            HStack {
+            HStack(spacing: 12) {
                 Picker("Preview Zoom", selection: $zoom) {
                     ForEach(PreviewZoom.allCases) { Text($0.title).tag($0) }
                 }
                 .labelsHidden().frame(width: 110)
+                Menu {
+                    Picker("Preview Appearance", selection: $appearance) {
+                        ForEach(PreviewAppearance.allCases) { mode in
+                            Label(mode.title, systemImage: mode.symbol).tag(mode)
+                        }
+                    }
+                } label: {
+                    Label("Preview Appearance", systemImage: appearance.symbol)
+                }
+                .labelStyle(.iconOnly)
+                .help("Choose the preview appearance. Background images retain their original colors.")
+                .accessibilityIdentifier("previewAppearanceMenu")
                 Spacer()
                 Text("Drag icons to adjust the layout").foregroundStyle(.secondary)
+                    .lineLimit(1).layoutPriority(-1)
                 Spacer()
                 Text("\(options.windowWidth, format: .number.precision(.fractionLength(0))) × \(options.windowHeight, format: .number.precision(.fractionLength(0)))")
                     .monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
@@ -75,22 +120,25 @@ struct LayoutPreview: View {
         GeometryReader { geometry in
             let fit = max(0.05, min(1, (geometry.size.width - 64) / width, (geometry.size.height - 64) / height))
             let scale = zoom.scale ?? fit
+            let image = backgroundImage
+            let labelColor: Color = image == nil ? .primary : .black
             ScrollView([.horizontal, .vertical]) {
                 FinderWindowPreview(title: options.resolvedVolumeName(for: sourceURL), titleHeight: titleHeight) {
                     ZStack(alignment: .topLeading) {
-                        Color.white
-                        if let backgroundImage {
+                        // Picture backgrounds keep the same backing color as the exported image.
+                        (image == nil ? Color(nsColor: .textBackgroundColor) : Color.white)
+                        if let image {
                             // Finder places the image at its native point size from the top left.
-                            Image(nsImage: backgroundImage)
+                            Image(nsImage: image)
                                 .resizable()
-                                .frame(width: backgroundImage.size.width, height: backgroundImage.size.height)
+                                .frame(width: image.size.width, height: image.size.height)
                         }
-                        FinderPreviewItem(name: sourceURL?.deletingPathExtension().lastPathComponent ?? String(localized: "Your App"), path: sourceURL?.path, position: appPosition, bounds: CGSize(width: width, height: contentHeight))
+                        FinderPreviewItem(name: sourceURL?.deletingPathExtension().lastPathComponent ?? String(localized: "Your App"), path: sourceURL?.path, labelColor: labelColor, position: appPosition, bounds: CGSize(width: width, height: contentHeight))
                         if options.includeApplications {
-                            FinderPreviewItem(name: "Applications", path: "/Applications", isAlias: true, position: applicationsPosition, bounds: CGSize(width: width, height: contentHeight))
+                            FinderPreviewItem(name: "Applications", path: "/Applications", isAlias: true, labelColor: labelColor, position: applicationsPosition, bounds: CGSize(width: width, height: contentHeight))
                         }
                         ForEach($options.extraItems) { $extra in
-                            FinderPreviewItem(name: extra.name, path: extra.url.path, position: Binding(get: { CGPoint(x: extra.x, y: extra.y) }, set: { extra.x = $0.x; extra.y = $0.y }), bounds: CGSize(width: width, height: contentHeight))
+                            FinderPreviewItem(name: extra.name, path: extra.url.path, labelColor: labelColor, position: Binding(get: { CGPoint(x: extra.x, y: extra.y) }, set: { extra.x = $0.x; extra.y = $0.y }), bounds: CGSize(width: width, height: contentHeight))
                         }
                     }
                     .frame(width: width, height: contentHeight, alignment: .topLeading)
@@ -99,7 +147,7 @@ struct LayoutPreview: View {
                 }
                 .frame(width: width, height: height)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.black.opacity(0.12)))
+                .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.primary.opacity(0.12)))
                 .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
                 .scaleEffect(scale, anchor: .topLeading)
                 .frame(width: width * scale, height: height * scale, alignment: .topLeading)
@@ -149,6 +197,7 @@ private struct FinderPreviewItem: View {
     let name: String
     let path: String?
     var isAlias = false
+    var labelColor: Color = .primary
     @Binding var position: CGPoint
     let bounds: CGSize
     @State private var dragOrigin: CGPoint?
@@ -176,7 +225,7 @@ private struct FinderPreviewItem: View {
             }
         }
         .overlay(alignment: .top) {
-            Text(name).font(.system(size: Double(metrics.textSize))).foregroundStyle(.black)
+            Text(name).font(.system(size: Double(metrics.textSize))).foregroundStyle(labelColor)
                 .lineLimit(2).multilineTextAlignment(.center).frame(width: 148)
                 .offset(y: metrics.iconSize + 8)
         }
@@ -196,4 +245,10 @@ private struct FinderPreviewItem: View {
 
 #Preview("Finder Layout") {
     PreviewCanvas(options: .constant(.init()), sourceURL: nil, isBuilding: false).frame(width: 780, height: 640)
+}
+
+#Preview("Finder Layout — Dark") {
+    PreviewCanvas(options: .constant(.init()), sourceURL: nil, isBuilding: false)
+        .environment(\.colorScheme, .dark)
+        .frame(width: 780, height: 640)
 }
