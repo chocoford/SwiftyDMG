@@ -1,84 +1,199 @@
 import AppKit
+import DSStoreKit
 import SwiftUI
+
+enum PreviewZoom: String, CaseIterable, Identifiable {
+    case fit, half, actual, double
+    var id: Self { self }
+    var title: String {
+        switch self {
+        case .fit: "适合窗口"
+        case .half: "50%"
+        case .actual: "100%"
+        case .double: "200%"
+        }
+    }
+    var scale: Double? {
+        switch self {
+        case .fit: nil
+        case .half: 0.5
+        case .actual: 1
+        case .double: 2
+        }
+    }
+}
+
+struct PreviewCanvas: View {
+    @Binding var options: PackagingOptions
+    let sourceURL: URL?
+    let isBuilding: Bool
+    @State private var zoom = PreviewZoom.fit
+
+    var body: some View {
+        VStack(spacing: 0) {
+            LayoutPreview(options: $options, sourceURL: sourceURL, zoom: zoom)
+                .disabled(isBuilding)
+            HStack {
+                Picker("预览缩放", selection: $zoom) {
+                    ForEach(PreviewZoom.allCases) { Text($0.title).tag($0) }
+                }
+                .labelsHidden().frame(width: 110)
+                Spacer()
+                Text("拖动图标调整位置").foregroundStyle(.secondary)
+                Spacer()
+                Text("\(options.windowWidth, format: .number.precision(.fractionLength(0))) × \(options.windowHeight, format: .number.precision(.fractionLength(0)))")
+                    .monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
+            }
+            .font(.caption).controlSize(.small).padding(14)
+        }
+        .background(Color(nsColor: .underPageBackgroundColor))
+    }
+}
 
 struct LayoutPreview: View {
     @Binding var options: PackagingOptions
     var sourceURL: URL?
+    var zoom = PreviewZoom.fit
+
+    private var width: Double { options.windowWidth.isFinite ? min(4096, max(320, options.windowWidth)) : 660 }
+    private var height: Double { options.windowHeight.isFinite ? min(4096, max(240, options.windowHeight)) : 400 }
+    // bwsp.WindowBounds describes the entire Finder window, including its title bar.
+    private var titleHeight: Double {
+        let content = NSWindow.contentRect(forFrameRect: NSRect(x: 0, y: 0, width: width, height: height), styleMask: [.titled, .closable, .miniaturizable, .resizable])
+        return height - content.height
+    }
+    private var contentHeight: Double { height - titleHeight }
+    private var backgroundImage: NSImage? {
+        switch options.background {
+        case .none: nil
+        case .custom: options.backgroundURL.flatMap { NSImage(contentsOf: $0) }
+        case .automatic: Bundle.main.url(forResource: "dmg-background", withExtension: "tiff").flatMap { NSImage(contentsOf: $0) }
+        }
+    }
 
     var body: some View {
         GeometryReader { geometry in
-            let width = options.windowWidth.isFinite ? max(320, options.windowWidth) : 660
-            let height = options.windowHeight.isFinite ? max(240, options.windowHeight) : 400
-            let scale = max(0.05, min(geometry.size.width / width, (geometry.size.height - 28) / height))
-            VStack(spacing: 0) {
-                HStack(spacing: 6) {
-                    ForEach([Color.red, Color.yellow, Color.green], id: \.self) { color in
-                        Circle().fill(color.opacity(0.8)).frame(width: 9, height: 9)
+            let fit = max(0.05, min(1, (geometry.size.width - 64) / width, (geometry.size.height - 64) / height))
+            let scale = zoom.scale ?? fit
+            ScrollView([.horizontal, .vertical]) {
+                FinderWindowPreview(title: sourceURL?.deletingPathExtension().lastPathComponent ?? "安装镜像", titleHeight: titleHeight) {
+                    ZStack(alignment: .topLeading) {
+                        Color.white
+                        if let backgroundImage {
+                            // Finder places the image at its native point size from the top left.
+                            Image(nsImage: backgroundImage)
+                                .resizable()
+                                .frame(width: backgroundImage.size.width, height: backgroundImage.size.height)
+                        }
+                        FinderPreviewItem(name: sourceURL?.deletingPathExtension().lastPathComponent ?? "Your App", path: sourceURL?.path, position: appPosition, bounds: CGSize(width: width, height: contentHeight))
+                        if options.includeApplications {
+                            FinderPreviewItem(name: "Applications", path: "/Applications", isAlias: true, position: applicationsPosition, bounds: CGSize(width: width, height: contentHeight))
+                        }
+                        ForEach($options.extraItems) { $extra in
+                            FinderPreviewItem(name: extra.name, path: extra.url.path, position: Binding(get: { CGPoint(x: extra.x, y: extra.y) }, set: { extra.x = $0.x; extra.y = $0.y }), bounds: CGSize(width: width, height: contentHeight))
+                        }
                     }
-                    Spacer()
-                    Text(sourceURL?.deletingPathExtension().lastPathComponent ?? "安装镜像").font(.caption).foregroundStyle(.secondary)
-                    Spacer()
-                }.padding(.horizontal, 12).frame(height: 28).background(.regularMaterial)
-                ZStack(alignment: .topLeading) {
-                    Color.white
-                    if let backgroundImage {
-                        Image(nsImage: backgroundImage).resizable().scaledToFill()
-                            .frame(width: width * scale, height: height * scale).clipped()
-                    }
-                    item(name: sourceURL?.lastPathComponent ?? "Your App.app", path: sourceURL?.path, symbol: "app.fill", scale: scale)
-                        .position(x: options.appX * scale, y: options.appY * scale)
-                        .gesture(drag(scale: scale) { options.appX = $0.x; options.appY = $0.y })
-                        .accessibilityLabel("App 图标位置")
-                    if options.includeApplications {
-                        item(name: "Applications", path: "/Applications", symbol: "folder.fill", scale: scale)
-                            .position(x: options.applicationsX * scale, y: options.applicationsY * scale)
-                            .gesture(drag(scale: scale) { options.applicationsX = $0.x; options.applicationsY = $0.y })
-                            .accessibilityLabel("Applications 链接位置")
-                    }
-                    ForEach($options.extraItems) { $extra in
-                        item(name: extra.name, path: extra.url.path, symbol: "doc.fill", scale: scale)
-                            .position(x: extra.x * scale, y: extra.y * scale)
-                            .gesture(drag(scale: scale) { extra.x = $0.x; extra.y = $0.y })
-                    }
+                    .frame(width: width, height: contentHeight, alignment: .topLeading)
+                    .coordinateSpace(name: "finderContent")
+                    .clipped()
                 }
-                .coordinateSpace(name: "dmgLayout")
-                .frame(width: width * scale, height: height * scale)
-                .clipped()
+                .frame(width: width, height: height)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.black.opacity(0.12)))
+                .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
+                .scaleEffect(scale, anchor: .topLeading)
+                .frame(width: width * scale, height: height * scale, alignment: .topLeading)
+                .padding(32)
+                .frame(minWidth: geometry.size.width, minHeight: geometry.size.height)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(.black.opacity(0.1)))
-            .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
-    private var backgroundImage: NSImage? {
-        switch options.background {
-        case .none: return nil
-        case .custom: return options.backgroundURL.flatMap { NSImage(contentsOf: $0) }
-        case .automatic:
-            return Bundle.main.url(forResource: "dmg-background", withExtension: "tiff").flatMap { NSImage(contentsOf: $0) }
-        }
+    private var appPosition: Binding<CGPoint> {
+        Binding(get: { CGPoint(x: options.appX, y: options.appY) }, set: { options.appX = $0.x; options.appY = $0.y })
     }
 
-    private func item(name: String, path: String?, symbol: String, scale: Double) -> some View {
-        VStack(spacing: 4) {
+    private var applicationsPosition: Binding<CGPoint> {
+        Binding(get: { CGPoint(x: options.applicationsX, y: options.applicationsY) }, set: { options.applicationsX = $0.x; options.applicationsY = $0.y })
+    }
+}
+
+private struct FinderWindowPreview<Content: View>: View {
+    let title: String
+    let titleHeight: Double
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 8) {
+                ForEach([Color(red: 1, green: 0.37, blue: 0.35), Color(red: 1, green: 0.74, blue: 0.18), Color(red: 0.16, green: 0.79, blue: 0.25)], id: \.self) { color in
+                    Circle().fill(color).overlay(Circle().strokeBorder(.black.opacity(0.12))).frame(width: 12, height: 12)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 10)
+            .overlay {
+                HStack(spacing: 5) {
+                    Image(systemName: "externaldrive").foregroundStyle(.secondary)
+                    Text(title).fontWeight(.semibold)
+                }.font(.system(size: 13)).lineLimit(1).padding(.horizontal, 80)
+            }
+            .frame(height: titleHeight)
+            .background(Color(nsColor: .windowBackgroundColor))
+            content
+        }
+    }
+}
+
+private struct FinderPreviewItem: View {
+    let name: String
+    let path: String?
+    var isAlias = false
+    @Binding var position: CGPoint
+    let bounds: CGSize
+    @State private var dragOrigin: CGPoint?
+
+    // Read the same defaults AppDMG writes to icvp rather than inventing preview sizes.
+    private let metrics = Record.icvpRecord.Value()
+
+    var body: some View {
+        Group {
             if let path {
-                Image(nsImage: NSWorkspace.shared.icon(forFile: path)).resizable().frame(width: 72 * scale, height: 72 * scale)
+                Image(nsImage: NSWorkspace.shared.icon(forFile: path)).resizable()
             } else {
-                Image(systemName: symbol).resizable().scaledToFit().foregroundStyle(.blue)
-                    .frame(width: 72 * scale, height: 72 * scale)
+                Image(systemName: "app.fill").resizable().foregroundStyle(.blue)
             }
-            Text(name).font(.system(size: max(9, 12 * scale))).foregroundStyle(.black)
-                .lineLimit(2).multilineTextAlignment(.center)
-        }.frame(width: 130 * scale).contentShape(Rectangle())
-    }
-
-    private func drag(scale: Double, update: @escaping (CGPoint) -> Void) -> some Gesture {
-        DragGesture(coordinateSpace: .named("dmgLayout"))
+        }
+        .frame(width: metrics.iconSize, height: metrics.iconSize)
+        .overlay(alignment: .bottomLeading) {
+            if isAlias {
+                Image(systemName: "arrowshape.turn.up.right.fill")
+                    .font(.system(size: 18, weight: .bold)).foregroundStyle(.black.opacity(0.8))
+                    .frame(width: 28, height: 28)
+                    .background(.white.opacity(0.95), in: Circle())
+                    .overlay(Circle().strokeBorder(.black.opacity(0.15)))
+                    .shadow(color: .black.opacity(0.15), radius: 1, y: 1)
+            }
+        }
+        .overlay(alignment: .top) {
+            Text(name).font(.system(size: Double(metrics.textSize))).foregroundStyle(.black)
+                .lineLimit(2).multilineTextAlignment(.center).frame(width: 148)
+                .offset(y: metrics.iconSize + 8)
+        }
+        .contentShape(Rectangle())
+        .position(position)
+        .gesture(DragGesture(minimumDistance: 1, coordinateSpace: .named("finderContent"))
             .onChanged { value in
-                update(CGPoint(x: min(max(value.location.x / scale, 0), options.windowWidth),
-                               y: min(max(value.location.y / scale, 0), options.windowHeight)))
+                let origin = dragOrigin ?? position
+                dragOrigin = origin
+                position = CGPoint(x: min(max(origin.x + value.translation.width, 0), bounds.width), y: min(max(origin.y + value.translation.height, 0), bounds.height))
             }
+            .onEnded { _ in dragOrigin = nil })
+        .help("拖动以调整 \(name) 的位置")
+        .accessibilityLabel("\(name) 图标位置")
     }
+}
+
+#Preview("Finder 布局") {
+    PreviewCanvas(options: .constant(.init()), sourceURL: nil, isBuilding: false).frame(width: 780, height: 640)
 }
