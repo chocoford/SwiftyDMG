@@ -37,6 +37,8 @@
 		D40000000000000000000102 /* WorkspaceCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000002 /* WorkspaceCommands.swift */; };
 		D40000000000000000000103 /* WorkspaceSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* WorkspaceSidebar.swift */; };
 		E50000000000000000000101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* Localizable.xcstrings */; };
+		E50000000000000000000102 /* ServicesMenu.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000002 /* ServicesMenu.xcstrings */; };
+		E50000000000000000000103 /* QuickBuildPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000003 /* QuickBuildPanel.swift */; };
 		E60000000000000000000101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* Localizable.xcstrings */; };
 		F70000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000001 /* AppDelegate.swift */; };
 		F70000000000000000000004 /* AdditionalFilesSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000003 /* AdditionalFilesSettingsSection.swift */; };
@@ -83,6 +85,8 @@
 		D40000000000000000000002 /* WorkspaceCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceCommands.swift; sourceTree = "<group>"; };
 		D40000000000000000000003 /* WorkspaceSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebar.swift; sourceTree = "<group>"; };
 		E50000000000000000000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		E50000000000000000000002 /* ServicesMenu.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = ServicesMenu.xcstrings; sourceTree = "<group>"; };
+		E50000000000000000000003 /* QuickBuildPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickBuildPanel.swift; sourceTree = "<group>"; };
 		F70000000000000000000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F70000000000000000000003 /* AdditionalFilesSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalFilesSettingsSection.swift; sourceTree = "<group>"; };
 		F70000000000000000000005 /* DiskIconSettingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskIconSettingsRow.swift; sourceTree = "<group>"; };
@@ -151,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				F7000000000000000000000F /* BuildLog.swift */,
+				E50000000000000000000003 /* QuickBuildPanel.swift */,
 				39A9DF03307FE726004704F3 /* Packager.swift */,
 				39A9DF0E307FE726004704F3 /* PackagingModel.swift */,
 				39A9DF04307FE726004704F3 /* PackagingOptions.swift */,
@@ -163,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				39A9DF07307FE726004704F3 /* dmg-background.tiff */,
+				E50000000000000000000002 /* ServicesMenu.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -369,6 +375,7 @@
 			isa = PBXResourcesBuildPhase;
 			files = (
 				E50000000000000000000101 /* Localizable.xcstrings in Resources */,
+				E50000000000000000000102 /* ServicesMenu.xcstrings in Resources */,
 				39A9DF593080CA5E004704F3 /* AppIcon.icon in Resources */,
 				39A9DF1A307FE726004704F3 /* dmg-background.tiff in Resources */,
 				39A9DF1B307FE726004704F3 /* Assets.xcassets in Resources */,
@@ -386,6 +393,7 @@
 		000000000000000120000000 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
+				E50000000000000000000103 /* QuickBuildPanel.swift in Sources */,
 				39A9DF12307FE726004704F3 /* Packager.swift in Sources */,
 				39A9DF13307FE726004704F3 /* PackagingOptions.swift in Sources */,
 				39A9DF14307FE726004704F3 /* ProcessExecutor.swift in Sources */,

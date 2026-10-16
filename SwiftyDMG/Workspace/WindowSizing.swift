@@ -98,9 +98,7 @@ struct WindowSizing: NSViewRepresentable {
             window.titlebarSeparatorStyle = isEditing ? .automatic : .none
             window.isMovableByWindowBackground = !isEditing
             window.toolbar?.isVisible = isEditing
-            // Keep the native close control available in the welcome stage.
-            window.standardWindowButton(.closeButton)?.isHidden = false
-            let buttons: [NSWindow.ButtonType] = [.miniaturizeButton, .zoomButton]
+            let buttons: [NSWindow.ButtonType] = [.closeButton, .miniaturizeButton, .zoomButton]
             for button in buttons {
                 window.standardWindowButton(button)?.isHidden = !isEditing
             }

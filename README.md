@@ -13,7 +13,7 @@ Drop in an `.app`, customize its disk image, and create an installer with an App
 - **Custom artwork.** Use a default or custom background, generate a disk icon from the app, or choose your own icon. Both assets can also be omitted.
 - **Flexible output.** Start with a filename based on the app's name and version, then customize the filename, save location, and mounted volume name.
 - **Detailed build activity.** Follow individual steps, expand their command output, copy the complete log, and reveal the finished DMG in Finder.
-- **Finder integration.** Open a selected app through the **Create DMG with SwiftyDMG** service.
+- **Finder integration.** Create a DMG directly from Finder with default settings, or open the selected app in SwiftyDMG to customize it first.
 
 ## Roadmap
 
@@ -44,10 +44,12 @@ Preview appearance changes the Finder window chrome and the **No Background** ca
 ### Finder context menu
 
 1. Move `SwiftyDMG.app` to Applications and open it once.
-2. Select one `.app` in Finder, right-click it, and choose **Services → Create DMG with SwiftyDMG**.
-3. Review its packaging settings in SwiftyDMG, then create the disk image.
+2. Select one `.app` in Finder and right-click it.
+3. Choose **Services → Create DMG with SwiftyDMG** to start packaging immediately with default settings. The DMG is saved beside the selected app with its name and version. A floating progress panel shows the percentage and current step while Finder keeps focus.
 
-If the service is missing, enable **Create DMG with SwiftyDMG** in **System Settings → Keyboard → Keyboard Shortcuts → Services**. The service is provided by the app and updates along with it.
+Choose **Configure DMG with SwiftyDMG…** instead to review or customize the settings before building. If a DMG already exists at the output location, SwiftyDMG asks before replacing it.
+
+Service names follow the system language. If either service is missing, enable it in **System Settings → Keyboard → Keyboard Shortcuts → Services**. The services are provided by the app and update along with it.
 
 ## Contributing
 

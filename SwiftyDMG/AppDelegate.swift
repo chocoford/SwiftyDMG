@@ -6,6 +6,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var createWorkspaceWindow: ((WorkspaceState) -> Void)?
     private var pendingApps: [URL] = []
     private var sessions: [ObjectIdentifier: WorkspaceSession] = [:]
+    private var quickBuildPanels: [UUID: QuickBuildPanelController] = [:]
+    private var suppressesAutomaticWorkspace = false
 
     func registerWorkspace(_ model: PackagingModel, window: NSWindow) {
         let id = ObjectIdentifier(window)
@@ -21,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func newWorkspace() {
+        suppressesAutomaticWorkspace = false
         createWorkspaceWindow?(.init())
     }
 
@@ -42,6 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func createWorkspace(for url: URL, reuseEmptyWindow: Bool) {
+        suppressesAutomaticWorkspace = false
         let candidate = PackagingModel()
         guard candidate.selectApp(url) else {
             NSApp.presentError(PackagingError.invalid(candidate.errorMessage ?? String(localizable: .errorOpenAppFailed)))
@@ -73,12 +77,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSUpdateDynamicServices()
     }
 
-    #if SWIFTYDMG_WORKSPACE_SAVING
-    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool { true }
-    #endif
+    func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
+        !suppressesAutomaticWorkspace
+    }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        guard !flag else { return true }
+        suppressesAutomaticWorkspace = false
+        let hasWorkspace = sessions.values.contains { $0.window?.isVisible == true }
+        guard !hasWorkspace, createWorkspaceWindow != nil else { return true }
         newWorkspace()
         return false
     }
@@ -110,11 +116,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             error.pointee = String(localizable: .errorFinderServiceSelection) as NSString
             return
         }
-        createWorkspace(for: urls[0], reuseEmptyWindow: true)
+        if userData == "configure" {
+            createWorkspace(for: urls[0], reuseEmptyWindow: true)
+        } else {
+            let model = PackagingModel()
+            guard model.selectApp(urls[0]) else {
+                error.pointee = (model.errorMessage ?? String(localizable: .errorOpenAppFailed)) as NSString
+                return
+            }
+            suppressesAutomaticWorkspace = true
+            let id = UUID()
+            let panel = QuickBuildPanelController(model: model)
+            panel.onClose = { [weak self] in self?.quickBuildPanels.removeValue(forKey: id) }
+            quickBuildPanels[id] = panel
+            panel.present()
+        }
     }
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        if sessions.values.contains(where: { $0.model?.isBuilding == true }) {
+        if sessions.values.contains(where: { $0.model?.isBuilding == true }) ||
+           quickBuildPanels.values.contains(where: { $0.model.isBuilding }) {
             let alert = NSAlert()
             alert.messageText = String(localizable: .dialogBuildInProgress)
             alert.informativeText = String(localizable: .dialogQuitDuringBuildHelp)

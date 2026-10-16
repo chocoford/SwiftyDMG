@@ -78,6 +78,35 @@
 			</dict>
 			<key>NSMessage</key>
 			<string>createDMG</string>
+			<key>NSUserData</key>
+			<string>build</string>
+			<key>NSPortName</key>
+			<string>SwiftyDMG</string>
+			<key>NSSendTypes</key>
+			<array>
+				<string>public.file-url</string>
+				<string>NSFilenamesPboardType</string>
+			</array>
+			<key>NSSendFileTypes</key>
+			<array>
+				<string>com.apple.application-bundle</string>
+			</array>
+			<key>NSRequiredContext</key>
+			<dict>
+				<key>NSApplicationIdentifier</key>
+				<string>com.apple.finder</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>NSMenuItem</key>
+			<dict>
+				<key>default</key>
+				<string>Configure DMG with SwiftyDMG…</string>
+			</dict>
+			<key>NSMessage</key>
+			<string>createDMG</string>
+			<key>NSUserData</key>
+			<string>configure</string>
 			<key>NSPortName</key>
 			<string>SwiftyDMG</string>
 			<key>NSSendTypes</key>
