@@ -24,6 +24,35 @@ final class PackagingTests: XCTestCase {
         XCTAssertEqual(output, "success")
     }
 
+    func testLogsStreamBeforeExitAndPreserveText() async throws {
+        let marker = FileManager.default.temporaryDirectory.appendingPathComponent("SwiftyDMG-log-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: marker) }
+        let warning = expectation(description: "Successful stderr is logged")
+        let tail = expectation(description: "Final unterminated line is logged")
+        let exit = expectation(description: "Exit status is logged")
+        let script = #"""
+            printf 'caf\303'
+            sleep 0.01
+            printf '\251\r\n'
+            printf 'warning\n' >&2
+            i=0
+            while [ ! -f "$1" ] && [ "$i" -lt 500 ]; do
+                sleep 0.01
+                i=$((i + 1))
+            done
+            [ -f "$1" ] || exit 9
+            printf 'tail'
+            """#
+        let output = try await ProcessExecutor.run("/bin/sh", arguments: ["-c", script, "logging-test", marker.path]) { line in
+            if line == "café" { try? Data().write(to: marker) }
+            if line == "[stderr] warning" { warning.fulfill() }
+            if line == "tail" { tail.fulfill() }
+            if line.hasPrefix("Exited with status 0 (") { exit.fulfill() }
+        }
+        XCTAssertEqual(output, "café\r\ntail")
+        await fulfillment(of: [warning, tail, exit], timeout: 1)
+    }
+
     private func fixture() throws -> (directory: URL, app: URL) {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("SwiftyDMG Tests \(UUID().uuidString)", isDirectory: true)
         let app = directory.appendingPathComponent("Example App.app", isDirectory: true)

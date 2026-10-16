@@ -3,6 +3,41 @@ import Foundation
 import Observation
 import UniformTypeIdentifiers
 
+struct BuildLogEntry: Identifiable {
+    let id = UUID()
+    let elapsed: TimeInterval
+    let message: String
+
+    var text: String {
+        let milliseconds = max(0, Int(elapsed * 1_000))
+        let timestamp = String(format: "%02d:%02d.%03d", milliseconds / 60_000,
+                               milliseconds / 1_000 % 60, milliseconds % 1_000)
+        return "[\(timestamp)] \(message)"
+    }
+}
+
+struct BuildLogStep: Identifiable {
+    enum Status: Equatable {
+        case running, succeeded, failed
+    }
+
+    let id = UUID()
+    let stage: BuildStage
+    let heading: BuildLogEntry
+    let startedAt: TimeInterval
+    var finishedAt: TimeInterval?
+    var status = Status.running
+    var entries: [BuildLogEntry] = []
+
+    var text: String {
+        ([heading.text] + entries.map(\.text)).joined(separator: "\n")
+    }
+
+    func duration(at uptime: TimeInterval) -> TimeInterval {
+        max(0, (finishedAt ?? uptime) - startedAt)
+    }
+}
+
 @MainActor @Observable
 final class PackagingModel {
     var workspace: WorkspaceState {
@@ -36,7 +71,8 @@ final class PackagingModel {
     private(set) var isBuilding = false
     private(set) var progress = 0.0
     private(set) var status = String(localized: "Ready")
-    private(set) var log: [String] = []
+    private(set) var logSteps: [BuildLogStep] = []
+    var buildLogText: String { logSteps.map(\.text).joined(separator: "\n\n") }
     private(set) var resultURL: URL?
     var errorMessage: String?
     var confirmReplacement = false
@@ -121,7 +157,7 @@ final class PackagingModel {
         errorMessage = nil
         status = String(localized: "Ready")
         progress = 0
-        log = []
+        logSteps = []
     }
 
     func chooseApp() {
@@ -211,30 +247,69 @@ final class PackagingModel {
         errorMessage = nil
         resultURL = nil
         progress = 0
-        log = []
+        logSteps = []
         isBuilding = true
         status = String(localized: "Preparing")
         Task { [self] in
-            do {
-                let result = try await packager.build(request) { [weak self] stage in
-                    Task { @MainActor in
-                        guard let self, self.isBuilding else { return }
-                        self.status = stage.title
-                        self.progress = max(self.progress, stage.fraction)
-                        self.log.append(stage.title)
-                    }
+            let started = ProcessInfo.processInfo.systemUptime
+            beginLogStep(.preparing, started: started)
+            let (events, continuation) = AsyncStream<BuildEvent>.makeStream()
+            let build = Task {
+                defer { continuation.finish() }
+                return try await packager.build(request, onLog: { message in
+                    continuation.yield(.output(message))
+                }, onProgress: { stage in
+                    continuation.yield(.stage(stage))
+                })
+            }
+            // One consumer preserves the received event order and drains the final
+            // output before showing success or failure.
+            for await event in events {
+                switch event {
+                case .stage(let stage):
+                    status = stage.title
+                    progress = max(progress, stage.fraction)
+                    beginLogStep(stage, started: started)
+                case .output(let message):
+                    appendLog(message, started: started)
                 }
+            }
+            do {
+                let result = try await build.value
                 resultURL = result
                 progress = 1
                 status = String(localized: "DMG Created")
-                log.append(String(localized: "Saved: \(result.path)"))
+                appendLog(String(localized: "Saved: \(result.path)"), started: started)
+                finishLogStep(.succeeded)
             } catch {
                 errorMessage = error.localizedDescription
                 status = String(localized: "Build Failed")
-                log.append(error.localizedDescription)
+                appendLog(error.localizedDescription, started: started)
+                finishLogStep(.failed)
             }
             isBuilding = false
         }
+    }
+
+    private func beginLogStep(_ stage: BuildStage, started: TimeInterval) {
+        if let current = logSteps.last, current.stage == stage, current.status == .running { return }
+        let now = ProcessInfo.processInfo.systemUptime
+        finishLogStep(.succeeded, at: now)
+        logSteps.append(BuildLogStep(stage: stage,
+                                     heading: BuildLogEntry(elapsed: now - started, message: stage.title),
+                                     startedAt: now))
+    }
+
+    private func finishLogStep(_ status: BuildLogStep.Status, at uptime: TimeInterval = ProcessInfo.processInfo.systemUptime) {
+        guard let index = logSteps.indices.last, logSteps[index].status == .running else { return }
+        logSteps[index].finishedAt = uptime
+        logSteps[index].status = status
+    }
+
+    private func appendLog(_ message: String, started: TimeInterval) {
+        guard let index = logSteps.indices.last else { return }
+        logSteps[index].entries.append(BuildLogEntry(elapsed: ProcessInfo.processInfo.systemUptime - started,
+                                                   message: message))
     }
 
     func importPreset() {

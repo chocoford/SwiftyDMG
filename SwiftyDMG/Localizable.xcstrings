@@ -37,6 +37,9 @@
     "%@ icon position" : {
 
     },
+    "%@ s" : {
+
+    },
     "%@ will be replaced only after the build succeeds." : {
 
     },
@@ -56,9 +59,6 @@
 
     },
     "Additional file not found: %@" : {
-
-    },
-    "Additional Files" : {
 
     },
     "An additional file has the same name as the app: %@" : {
@@ -86,9 +86,6 @@
 
     },
     "Automatically Download Updates" : {
-
-    },
-    "Automatically Select Certificate" : {
 
     },
     "Background" : {
@@ -121,16 +118,22 @@
     "Click the play button in the toolbar to create a DMG.\nBuild progress and logs will appear here." : {
 
     },
+    "Completed" : {
+
+    },
     "Compressing Image" : {
 
     },
     "Continue Building" : {
 
     },
-    "Copy Build Log" : {
+    "Copy Entire Build Log" : {
 
     },
     "Copy Error" : {
+
+    },
+    "Copy Step Log" : {
 
     },
     "Create a disk image for your macOS app" : {
@@ -160,16 +163,19 @@
     "Disk Icon" : {
 
     },
+    "Disk Icon Preview" : {
+
+    },
     "Disk Image" : {
 
     },
     "DMG Created" : {
 
     },
-    "DMG Signing" : {
+    "Drag icons to adjust the layout" : {
 
     },
-    "Drag icons to adjust the layout" : {
+    "Drag to adjust, or click to enter a value." : {
 
     },
     "Drag to reposition %@" : {
@@ -178,22 +184,22 @@
     "Drop Your App Here" : {
 
     },
+    "Edit Value" : {
+
+    },
     "Enter a signing identity name or SHA-1." : {
 
     },
     "Enter an output file name." : {
 
     },
-    "File Actions" : {
+    "Failed" : {
 
     },
     "File Name" : {
 
     },
     "File not found. Choose a replacement from the context menu." : {
-
-    },
-    "File not found. Use Replace File to locate it." : {
 
     },
     "Finder Service" : {
@@ -209,9 +215,6 @@
 
     },
     "H" : {
-
-    },
-    "Identity name or SHA-1" : {
 
     },
     "If the service is missing, enable it in System Settings → Keyboard → Keyboard Shortcuts → Services." : {
@@ -263,9 +266,6 @@
 
     },
     "OK" : {
-
-    },
-    "Only the generated DMG is signed." : {
 
     },
     "Open App" : {
@@ -328,10 +328,25 @@
     "Replace File…" : {
 
     },
+    "Reset %@" : {
+
+    },
+    "Reset App Position" : {
+
+    },
     "Reset File Name" : {
 
     },
-    "Reset to the app name and version" : {
+    "Reset Link Position" : {
+
+    },
+    "Reset to Default" : {
+
+    },
+    "Reset Value" : {
+
+    },
+    "Running" : {
 
     },
     "Save DMG" : {
@@ -382,9 +397,6 @@
     "Show or Hide Inspector" : {
 
     },
-    "Signing" : {
-
-    },
     "Signing Image" : {
 
     },
@@ -392,9 +404,6 @@
 
     },
     "Software Updates" : {
-
-    },
-    "Specific Identity" : {
 
     },
     "SwiftyDMG" : {
@@ -443,6 +452,9 @@
 
     },
     "Unable to open this app." : {
+
+    },
+    "Unable to Preview Icon" : {
 
     },
     "Unmounting Image" : {
