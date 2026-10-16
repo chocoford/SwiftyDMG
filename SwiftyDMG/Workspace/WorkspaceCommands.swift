@@ -12,13 +12,13 @@ struct WorkspaceCommands: Commands {
                 .keyboardShortcut("o", modifiers: [.command, .shift])
         }
         #else
+        // Keep WindowGroup's native Close command; document saving is not part of this scene.
         CommandGroup(replacing: .newItem) {
             Button(.localizable(.menuNewWindow), action: delegate.newWorkspace)
                 .keyboardShortcut("n")
             Button(.localizable(.menuOpenApp), action: delegate.openApp)
                 .keyboardShortcut("o")
         }
-        CommandGroup(replacing: .saveItem) {}
         #endif
         #if SWIFTYDMG_WORKSPACE_SAVING
         CommandMenu(.localizable(.menuPresets)) {
