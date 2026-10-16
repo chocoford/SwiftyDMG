@@ -91,6 +91,8 @@ struct WindowSizing: NSViewRepresentable {
 
         private func applyWindowChrome(_ window: NSWindow) {
             // Keep the same window style in both stages; only reveal its chrome.
+            window.isOpaque = isEditing
+            window.backgroundColor = isEditing ? .windowBackgroundColor : .clear
             window.titleVisibility = isEditing ? .visible : .hidden
             window.titlebarAppearsTransparent = !isEditing
             window.titlebarSeparatorStyle = isEditing ? .automatic : .none

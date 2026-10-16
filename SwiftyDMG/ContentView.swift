@@ -52,6 +52,13 @@ struct ContentView: View {
         .allowsHitTesting(presentation.isInteractive)
         .accessibilityHidden(!presentation.isInteractive)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            // Keep the glass visible while the welcome content fades out.
+            if !presentation.expandsWindow {
+                welcomeBackground
+                    .ignoresSafeArea()
+            }
+        }
         .background(WindowSizing(
             isEditing: presentation.expandsWindow,
             reduceMotion: reduceMotion,
@@ -105,6 +112,17 @@ struct ContentView: View {
             Button("Replace", role: .destructive) { model.startBuild(replaceExisting: true) }
             Button("Cancel", role: .cancel) {}
         } message: { Text("\(model.outputURL?.lastPathComponent ?? "DMG") will be replaced only after the build succeeds.") }
+    }
+
+    @ViewBuilder
+    private var welcomeBackground: some View {
+        let shape = RoundedRectangle(cornerRadius: 16, style: .continuous)
+        if #available(macOS 26.0, *) {
+            Color.clear
+                .glassEffect(.regular, in: shape)
+        } else {
+            shape.fill(.ultraThinMaterial)
+        }
     }
 
     private func beginOpening(_ hasSource: Bool) {

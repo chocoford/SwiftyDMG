@@ -22,7 +22,6 @@ struct WelcomeView: View {
                 .accessibilityIdentifier("openAppButton")
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.background)
         .ignoresSafeArea(.container, edges: .top)
         .dropDestination(for: URL.self) { urls, _ in
             guard urls.count == 1 else { return false }
