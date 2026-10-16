@@ -32,6 +32,7 @@
 		C30000000000000000000102 /* WindowSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000002 /* WindowSizing.swift */; };
 		C30000000000000000000103 /* PackagingInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000003 /* PackagingInspector.swift */; };
 		C30000000000000000000104 /* BuildInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000004 /* BuildInspector.swift */; };
+		C30000000000000000000105 /* InspectorNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000005 /* InspectorNumberField.swift */; };
 		D40000000000000000000101 /* WorkspaceDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000001 /* WorkspaceDocument.swift */; };
 		D40000000000000000000102 /* WorkspaceCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000002 /* WorkspaceCommands.swift */; };
 		D40000000000000000000103 /* WorkspaceSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* WorkspaceSidebar.swift */; };
@@ -62,6 +63,7 @@
 		C30000000000000000000002 /* WindowSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSizing.swift; sourceTree = "<group>"; };
 		C30000000000000000000003 /* PackagingInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingInspector.swift; sourceTree = "<group>"; };
 		C30000000000000000000004 /* BuildInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInspector.swift; sourceTree = "<group>"; };
+		C30000000000000000000005 /* InspectorNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorNumberField.swift; sourceTree = "<group>"; };
 		D40000000000000000000001 /* WorkspaceDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceDocument.swift; sourceTree = "<group>"; };
 		D40000000000000000000002 /* WorkspaceCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceCommands.swift; sourceTree = "<group>"; };
 		D40000000000000000000003 /* WorkspaceSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebar.swift; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 				C30000000000000000000001 /* WelcomeView.swift */,
 				C30000000000000000000002 /* WindowSizing.swift */,
 				C30000000000000000000003 /* PackagingInspector.swift */,
+				C30000000000000000000005 /* InspectorNumberField.swift */,
 				C30000000000000000000004 /* BuildInspector.swift */,
 				39A9DF0D307FE726004704F3 /* LayoutPreview.swift */,
 				39A9DF0E307FE726004704F3 /* PackagingModel.swift */,
@@ -293,6 +296,7 @@
 				C30000000000000000000101 /* WelcomeView.swift in Sources */,
 				C30000000000000000000102 /* WindowSizing.swift in Sources */,
 				C30000000000000000000103 /* PackagingInspector.swift in Sources */,
+				C30000000000000000000105 /* InspectorNumberField.swift in Sources */,
 				C30000000000000000000104 /* BuildInspector.swift in Sources */,
 				39A9DF16307FE726004704F3 /* LayoutPreview.swift in Sources */,
 				39A9DF17307FE726004704F3 /* PackagingModel.swift in Sources */,

@@ -1,5 +1,7 @@
 import AppKit
+import AppDMG
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct PackagingSettingsView: View {
     @Bindable var model: PackagingModel
@@ -18,14 +20,7 @@ struct PackagingSettingsView: View {
                     if model.options.background == .custom {
                         InspectorAssetRow(url: model.options.backgroundURL) { model.chooseImage(forBackground: true) }
                     }
-                    Picker("Disk Icon", selection: $model.options.diskIcon) {
-                        Text("Generate from App").tag(AssetMode.automatic)
-                        Text("Custom Image").tag(AssetMode.custom)
-                        Text("None").tag(AssetMode.none)
-                    }
-                    if model.options.diskIcon == .custom {
-                        InspectorAssetRow(url: model.options.diskIconURL) { model.chooseImage(forBackground: false) }
-                    }
+                    DiskIconSettingsRow(model: model)
                 }
                 Section("Finder Window") {
                     VStack(alignment: .leading, spacing: 10) {
@@ -40,24 +35,33 @@ struct PackagingSettingsView: View {
                         .accessibilityIdentifier("volumeNameField")
                     }
                     .controlSize(.regular)
-                    .padding(.vertical, 8)
+                    .padding(.bottom, 8)
                     LabeledContent("Size") {
-                        CoordinateFields(first: $model.options.windowWidth, second: $model.options.windowHeight, firstLabel: "W", secondLabel: "H")
+                        CoordinateFields(
+                            first: $model.options.windowWidth, second: $model.options.windowHeight,
+                            firstLabel: "W", secondLabel: "H",
+                            firstRange: 320...4096, secondRange: 240...4096,
+                            firstDefault: PackagingOptions().windowWidth, secondDefault: PackagingOptions().windowHeight
+                        )
                     }
+                    .labeledContentStyle(InspectorInlineRowStyle())
                     #if SWIFTYDMG_SIDEBAR
                     selectedItemPosition
                     #else
                     PositionSettingsRow(
                         title: "App Position", x: $model.options.appX, y: $model.options.appY,
                         resetTitle: "Reset App Position", resetIdentifier: "resetAppPositionButton",
-                        reset: model.resetAppPosition
+                        reset: model.resetAppPosition,
+                        maxX: model.options.windowWidth, maxY: model.options.windowHeight
                     )
                     Toggle("Applications Link", isOn: $model.options.includeApplications)
                     if model.options.includeApplications {
                         PositionSettingsRow(
                             title: "Link Position", x: $model.options.applicationsX, y: $model.options.applicationsY,
                             resetTitle: "Reset Link Position", resetIdentifier: "resetLinkPositionButton",
-                            reset: model.resetApplicationsPosition
+                            reset: model.resetApplicationsPosition,
+                            maxX: model.options.windowWidth, maxY: model.options.windowHeight,
+                            defaultX: PackagingOptions().applicationsX, defaultY: PackagingOptions().applicationsY
                         )
                     }
                     #endif
@@ -96,24 +100,111 @@ struct PackagingSettingsView: View {
             PositionSettingsRow(
                 title: "Position", x: $model.options.appX, y: $model.options.appY,
                 resetTitle: "Reset App Position", resetIdentifier: "resetAppPositionButton",
-                reset: model.resetAppPosition
+                reset: model.resetAppPosition,
+                maxX: model.options.windowWidth, maxY: model.options.windowHeight
             )
         case .applications:
             if model.options.includeApplications {
                 PositionSettingsRow(
                     title: "Position", x: $model.options.applicationsX, y: $model.options.applicationsY,
                     resetTitle: "Reset Link Position", resetIdentifier: "resetLinkPositionButton",
-                    reset: model.resetApplicationsPosition
+                    reset: model.resetApplicationsPosition,
+                    maxX: model.options.windowWidth, maxY: model.options.windowHeight,
+                    defaultX: PackagingOptions().applicationsX, defaultY: PackagingOptions().applicationsY
                 )
             }
         case .extra(let id):
             ForEach($model.options.extraItems) { $item in
                 if item.id == id {
-                    LabeledContent("Position") { CoordinateFields(first: $item.x, second: $item.y) }
+                    LabeledContent("Position") {
+                        CoordinateFields(first: $item.x, second: $item.y,
+                                         firstRange: 0...model.options.windowWidth, secondRange: 0...model.options.windowHeight)
+                    }
+                    .labeledContentStyle(InspectorInlineRowStyle())
                 }
             }
         case nil:
             EmptyView()
+        }
+    }
+}
+
+private struct DiskIconSettingsRow: View {
+    @Bindable var model: PackagingModel
+    @State private var preview: NSImage?
+    @State private var previewError: String?
+
+    private struct PreviewRequest: Equatable {
+        let sourceURL: URL?
+        let mode: AssetMode
+        let customURL: URL?
+    }
+
+    private var request: PreviewRequest {
+        PreviewRequest(sourceURL: model.sourceURL, mode: model.options.diskIcon, customURL: model.options.diskIconURL)
+    }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Picker("Disk Icon", selection: $model.options.diskIcon) {
+                Text("Generate from App").tag(AssetMode.automatic)
+                Text("Custom Image").tag(AssetMode.custom)
+                Text("None").tag(AssetMode.none)
+            }
+            if model.options.diskIcon == .custom {
+                InspectorAssetRow(url: model.options.diskIconURL) { model.chooseImage(forBackground: false) }
+            }
+            VStack(spacing: 6) {
+                if let previewError {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.title2)
+                        .foregroundStyle(.secondary)
+                        .frame(width: 72, height: 72)
+                    Text("Unable to Preview Icon")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .help(previewError)
+                } else {
+                    Image(nsImage: preview ?? NSWorkspace.shared.icon(for: .diskImage))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 72, height: 72)
+                        .accessibilityLabel("Disk Icon Preview")
+                        .help("Disk Icon Preview")
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+        }
+        .task(id: request) {
+            let requested = request
+            // Yield so the inspector can appear before generating the icon representations.
+            await Task.yield()
+            guard !Task.isCancelled else { return }
+            previewError = nil
+            do {
+                let option: AppDMG.DMGIconOption
+                switch requested.mode {
+                case .automatic:
+                    option = .default
+                case .custom:
+                    guard let url = requested.customURL else {
+                        preview = nil
+                        return
+                    }
+                    option = .manually(url)
+                case .none:
+                    option = .skip
+                }
+                if let sourceURL = requested.sourceURL {
+                    preview = try AppDMG.default.diskIcon(forAppAt: sourceURL, option: option)
+                } else {
+                    preview = nil
+                }
+            } catch {
+                preview = nil
+                previewError = error.localizedDescription
+            }
         }
     }
 }
@@ -141,7 +232,11 @@ private struct AdditionalFilesSettingsSection: View {
                         .menuIndicator(.hidden)
                         .help("File Actions")
                     }
-                    LabeledContent("Position") { CoordinateFields(first: $item.x, second: $item.y) }
+                    LabeledContent("Position") {
+                        CoordinateFields(first: $item.x, second: $item.y,
+                                         firstRange: 0...model.options.windowWidth, secondRange: 0...model.options.windowHeight)
+                    }
+                    .labeledContentStyle(InspectorInlineRowStyle())
                     if !FileManager.default.fileExists(atPath: item.url.path) {
                         Label("File not found. Use Replace File to locate it.", systemImage: "exclamationmark.triangle")
                             .font(.caption).foregroundStyle(.orange)
@@ -169,15 +264,7 @@ private struct OutputSettingsSection: View {
 
     var body: some View {
         Section("Output") {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("File Name").fontWeight(.medium)
-                    Spacer(minLength: 12)
-                    InspectorResetButton(title: "Reset File Name", action: model.resetOutputName)
-                        .help("Reset to the app name and version")
-                        .disabled(model.sourceURL == nil)
-                        .accessibilityIdentifier("resetOutputNameButton")
-                }
+            LabeledContent {
                 HStack(spacing: 8) {
                     TextField("File Name", text: $model.outputName)
                         .labelsHidden()
@@ -186,8 +273,11 @@ private struct OutputSettingsSection: View {
                         .accessibilityIdentifier("outputNameField")
                     Text(".dmg").foregroundStyle(.secondary)
                 }
+            } label: {
+                InspectorResetLabel(title: "File Name", resetTitle: "Reset File Name",
+                                    resetIdentifier: "resetOutputNameButton", reset: model.resetOutputName,
+                                    canReset: model.sourceURL != nil)
             }
-            .padding(.vertical, 8)
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
@@ -195,7 +285,7 @@ private struct OutputSettingsSection: View {
                     Spacer(minLength: 12)
                     Button("Change…", action: model.chooseOutput)
                 }
-                HStack(alignment: .top, spacing: 8) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Image(systemName: "folder")
                         .foregroundStyle(.secondary)
                         .accessibilityHidden(true)
@@ -205,7 +295,6 @@ private struct OutputSettingsSection: View {
                         .lineLimit(3)
                         .truncationMode(.middle)
                         .textSelection(.enabled)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                         .help(directoryPath)
                     Button("Open Save Location in Finder", systemImage: "arrow.right.circle.fill") {
                         guard let directoryURL else { return }
@@ -213,8 +302,9 @@ private struct OutputSettingsSection: View {
                     }
                     .labelStyle(.iconOnly)
                     .buttonStyle(.borderless)
-                    .controlSize(.small)
-                    .imageScale(.small)
+                    .font(.callout)
+                    .controlSize(.regular)
+                    .imageScale(.medium)
                     .help("Open Save Location in Finder")
                     .disabled(directoryURL == nil)
                     .accessibilityIdentifier("openOutputFolderButton")
@@ -239,6 +329,50 @@ private struct InspectorResetButton: View {
     }
 }
 
+private struct InspectorResetLabel: View {
+    let title: LocalizedStringKey
+    let resetTitle: LocalizedStringKey
+    let resetIdentifier: String
+    let reset: () -> Void
+    var canReset = true
+
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @State private var isHovered = false
+    @FocusState private var resetFocused: Bool
+
+    private var showsReset: Bool { isHovered || resetFocused || voiceOverEnabled }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Text(title)
+            InspectorResetButton(title: resetTitle, action: reset)
+                .help(resetTitle)
+                .disabled(!canReset)
+                .focused($resetFocused)
+                .opacity(showsReset ? 1 : 0)
+                .allowsHitTesting(showsReset)
+                .accessibilityIdentifier(resetIdentifier)
+        }
+        .contentShape(Rectangle())
+        .onHover { isHovered = $0 }
+        .contextMenu {
+            Button(resetTitle, action: reset).disabled(!canReset)
+        }
+    }
+}
+
+private struct InspectorInlineRowStyle: LabeledContentStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(alignment: .center, spacing: 0) {
+            configuration.label
+                .lineLimit(1)
+            Spacer(minLength: 8)
+            configuration.content
+                .fixedSize(horizontal: true, vertical: false)
+        }
+    }
+}
+
 private struct PositionSettingsRow: View {
     let title: LocalizedStringKey
     @Binding var x: Double
@@ -246,19 +380,26 @@ private struct PositionSettingsRow: View {
     let resetTitle: LocalizedStringKey
     let resetIdentifier: String
     let reset: () -> Void
+    var maxX: Double
+    var maxY: Double
+    var defaultX = PackagingOptions().appX
+    var defaultY = PackagingOptions().appY
+    @State private var resetGeneration = 0
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(title).fontWeight(.medium)
-                Spacer(minLength: 12)
-                InspectorResetButton(title: resetTitle, action: reset)
-                    .help(resetTitle)
-                    .accessibilityIdentifier(resetIdentifier)
-            }
-            CoordinateFields(first: $x, second: $y)
+        LabeledContent {
+            CoordinateFields(first: $x, second: $y,
+                             firstRange: 0...maxX, secondRange: 0...maxY,
+                             firstDefault: defaultX, secondDefault: defaultY,
+                             resetGeneration: resetGeneration)
+        } label: {
+            InspectorResetLabel(title: title, resetTitle: resetTitle,
+                                resetIdentifier: resetIdentifier, reset: {
+                                    resetGeneration += 1
+                                    reset()
+                                })
         }
-        .padding(.vertical, 8)
+        .labeledContentStyle(InspectorInlineRowStyle())
     }
 }
 
@@ -278,20 +419,20 @@ private struct InspectorAssetRow: View {
 struct CoordinateFields: View {
     @Binding var first: Double
     @Binding var second: Double
-    var firstLabel: LocalizedStringKey = "X"
-    var secondLabel: LocalizedStringKey = "Y"
+    var firstLabel: LocalizedStringResource = "X"
+    var secondLabel: LocalizedStringResource = "Y"
+    var firstRange: ClosedRange<Double> = 0...4096
+    var secondRange: ClosedRange<Double> = 0...4096
+    var firstDefault: Double?
+    var secondDefault: Double?
+    var resetGeneration = 0
 
     var body: some View {
         HStack(spacing: 5) {
-            Text(firstLabel).foregroundStyle(.secondary)
-            TextField(firstLabel, value: $first, format: .number.precision(.fractionLength(0)))
-                .labelsHidden().frame(width: 48).accessibilityLabel(firstLabel)
-            Text(secondLabel).foregroundStyle(.secondary)
-            TextField(secondLabel, value: $second, format: .number.precision(.fractionLength(0)))
-                .labelsHidden().frame(width: 48).accessibilityLabel(secondLabel)
+            InspectorNumberField(value: $first, label: firstLabel, range: firstRange,
+                                 defaultValue: firstDefault, resetGeneration: resetGeneration)
+            InspectorNumberField(value: $second, label: secondLabel, range: secondRange,
+                                 defaultValue: secondDefault, resetGeneration: resetGeneration)
         }
-        .textFieldStyle(.roundedBorder)
-        .multilineTextAlignment(.trailing)
-        .font(.caption)
     }
 }
