@@ -7,7 +7,7 @@ enum PreviewZoom: String, CaseIterable, Identifiable {
     var id: Self { self }
     var title: String {
         switch self {
-        case .fit: String(localized: "Fit to Window")
+        case .fit: String(localizable: .previewFitToWindow)
         case .half: "50%"
         case .actual: "100%"
         case .double: "200%"
@@ -29,9 +29,9 @@ enum PreviewAppearance: String, CaseIterable, Identifiable {
 
     var title: LocalizedStringKey {
         switch self {
-        case .system: "System"
-        case .light: "Light"
-        case .dark: "Dark"
+        case .system: .localizable(.previewAppearanceSystem)
+        case .light: .localizable(.previewAppearanceLight)
+        case .dark: .localizable(.previewAppearanceDark)
         }
     }
 
@@ -66,27 +66,27 @@ struct PreviewCanvas: View {
                 .environment(\.colorScheme, appearance.colorScheme(following: systemColorScheme))
                 .disabled(isBuilding)
             HStack(spacing: 12) {
-                Picker("Preview Zoom", selection: $zoom) {
-                    ForEach(PreviewZoom.allCases) { Text($0.title).tag($0) }
+                Picker(.localizable(.previewZoom), selection: $zoom) {
+                    ForEach(PreviewZoom.allCases) { Text(verbatim: $0.title).tag($0) }
                 }
                 .labelsHidden().frame(width: 110)
                 Menu {
-                    Picker("Preview Appearance", selection: $appearance) {
+                    Picker(.localizable(.previewAppearance), selection: $appearance) {
                         ForEach(PreviewAppearance.allCases) { mode in
                             Label(mode.title, systemImage: mode.symbol).tag(mode)
                         }
                     }
                 } label: {
-                    Label("Preview Appearance", systemImage: appearance.symbol)
+                    Label(.localizable(.previewAppearance), systemImage: appearance.symbol)
                 }
                 .labelStyle(.iconOnly)
-                .help("Choose the preview appearance. Background images retain their original colors.")
+                .help(String(localizable: .previewAppearanceHelp))
                 .accessibilityIdentifier("previewAppearanceMenu")
                 Spacer()
-                Text("Drag icons to adjust the layout").foregroundStyle(.secondary)
+                Text(.localizable(.previewLayoutHelp)).foregroundStyle(.secondary)
                     .lineLimit(1).layoutPriority(-1)
                 Spacer()
-                Text("\(options.windowWidth, format: .number.precision(.fractionLength(0))) × \(options.windowHeight, format: .number.precision(.fractionLength(0)))")
+                Text(verbatim: "\(options.windowWidth.formatted(.number.precision(.fractionLength(0)))) × \(options.windowHeight.formatted(.number.precision(.fractionLength(0))))")
                     .monospacedDigit().foregroundStyle(.secondary).lineLimit(1)
             }
             .font(.caption).controlSize(.small).padding(14)
@@ -133,7 +133,7 @@ struct LayoutPreview: View {
                                 .resizable()
                                 .frame(width: image.size.width, height: image.size.height)
                         }
-                        FinderPreviewItem(name: sourceURL?.deletingPathExtension().lastPathComponent ?? String(localized: "Your App"), path: sourceURL?.path, labelColor: labelColor, position: appPosition, bounds: CGSize(width: width, height: contentHeight))
+                        FinderPreviewItem(name: sourceURL?.deletingPathExtension().lastPathComponent ?? String(localizable: .previewAppPlaceholder), path: sourceURL?.path, labelColor: labelColor, position: appPosition, bounds: CGSize(width: width, height: contentHeight))
                         if options.includeApplications {
                             FinderPreviewItem(name: "Applications", path: "/Applications", isAlias: true, labelColor: labelColor, position: applicationsPosition, bounds: CGSize(width: width, height: contentHeight))
                         }
@@ -183,7 +183,7 @@ private struct FinderWindowPreview<Content: View>: View {
             .overlay {
                 HStack(spacing: 5) {
                     Image(systemName: "externaldrive").foregroundStyle(.secondary)
-                    Text(title).fontWeight(.semibold)
+                    Text(verbatim: title).fontWeight(.semibold)
                 }.font(.system(size: 13)).lineLimit(1).padding(.horizontal, 80)
             }
             .frame(height: titleHeight)
@@ -225,7 +225,7 @@ private struct FinderPreviewItem: View {
             }
         }
         .overlay(alignment: .top) {
-            Text(name).font(.system(size: Double(metrics.textSize))).foregroundStyle(labelColor)
+            Text(verbatim: name).font(.system(size: Double(metrics.textSize))).foregroundStyle(labelColor)
                 .lineLimit(2).multilineTextAlignment(.center).frame(width: 148)
                 .offset(y: metrics.iconSize + 8)
         }
@@ -238,8 +238,8 @@ private struct FinderPreviewItem: View {
                 position = CGPoint(x: min(max(origin.x + value.translation.width, 0), bounds.width), y: min(max(origin.y + value.translation.height, 0), bounds.height))
             }
             .onEnded { _ in dragOrigin = nil })
-        .help("Drag to reposition \(name)")
-        .accessibilityLabel("\(name) icon position")
+        .help(String(localizable: .previewRepositionItemHelp(name)))
+        .accessibilityLabel(.localizable(.previewItemPositionLabel(name)))
     }
 }
 

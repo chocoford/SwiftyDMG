@@ -12,8 +12,8 @@ struct WelcomeView: View {
                 .foregroundStyle(isTargeted ? Color.accentColor : Color.secondary)
                 .symbolRenderingMode(.hierarchical)
             VStack(spacing: 8) {
-                Text("Drop Your App Here").font(.title2.weight(.semibold))
-                Text("Create a disk image for your macOS app")
+                Text(.localizable(.welcomeTitle)).font(.title2.weight(.semibold))
+                Text(.localizable(.welcomeSubtitle))
                     .font(.callout).foregroundStyle(.secondary)
             }
             openButton
@@ -33,9 +33,9 @@ struct WelcomeView: View {
     @ViewBuilder
     private var openButton: some View {
         if #available(macOS 26.0, *) {
-            Button("Open…", action: open).buttonStyle(.glass)
+            Button(.localizable(.generalButtonOpen), action: open).buttonStyle(.glass)
         } else {
-            Button("Open…", action: open).buttonStyle(.bordered)
+            Button(.localizable(.generalButtonOpen), action: open).buttonStyle(.bordered)
         }
     }
 }

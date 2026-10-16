@@ -30,9 +30,9 @@ struct InspectorNumberField: View {
                 .allowsHitTesting(false)
         }
         .contextMenu {
-            Button("Edit Value") { editRequest += 1 }
+            Button(.localizable(.inspectorEditValue)) { editRequest += 1 }
             if let defaultValue {
-                Button("Reset Value") {
+                Button(.localizable(.inspectorResetValue)) {
                     localResetGeneration += 1
                     value = min(range.upperBound, max(range.lowerBound, defaultValue.rounded()))
                 }
@@ -127,7 +127,7 @@ private final class NumberControlView: NSView, NSTextFieldDelegate, NSGestureRec
         resetButton.target = self
         resetButton.action = #selector(resetValue)
         resetButton.isHidden = true
-        resetButton.toolTip = String(localized: "Reset to Default")
+        resetButton.toolTip = String(localizable: .inspectorResetToDefault)
         addSubview(resetButton)
 
         pan.buttonMask = 1
@@ -140,7 +140,7 @@ private final class NumberControlView: NSView, NSTextFieldDelegate, NSGestureRec
         addGestureRecognizer(click)
         setAccessibilityElement(true)
         setAccessibilityRole(.textField)
-        setAccessibilityHelp(String(localized: "Drag to adjust, or click to enter a value."))
+        setAccessibilityHelp(String(localizable: .inspectorNumericControlHelp))
     }
 
     required init?(coder: NSCoder) { return nil }
@@ -188,7 +188,7 @@ private final class NumberControlView: NSView, NSTextFieldDelegate, NSGestureRec
         prefix.stringValue = label
         number.stringValue = formattedValue
         resetButton.isEnabled = enabled
-        resetButton.setAccessibilityLabel(String(localized: "Reset \(label)"))
+        resetButton.setAccessibilityLabel(String(localizable: .inspectorResetNamedValue(label)))
         setAccessibilityLabel(label)
         setAccessibilityValue(formattedValue)
         setAccessibilityEnabled(enabled)

@@ -1,5 +1,5 @@
 {
-  "originHash" : "6104004ae95339ab1cea5327113d2bf726f55443c33a10ff30582a87ecdcdd99",
+  "originHash" : "85a2674779c7044e43537cb15941b6cb5ee2b468876b2f6b4941711e4e5eb687",
   "pins" : [
     {
       "identity" : "sparkle",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "eef1a539a373c1f1a320624b1130fc5de7b2e100",
         "version" : "2.10.0"
+      }
+    },
+    {
+      "identity" : "xcstrings-tool-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/liamnichols/xcstrings-tool-plugin",
+      "state" : {
+        "revision" : "bebb29f791e92f6ee5d9b6200f89c45249149957",
+        "version" : "1.2.0"
       }
     }
   ],

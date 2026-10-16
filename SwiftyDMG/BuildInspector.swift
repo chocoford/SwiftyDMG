@@ -18,32 +18,32 @@ struct BuildInspector: View {
                         Image(systemName: model.resultURL != nil ? "checkmark.circle.fill" : hasActivity ? "exclamationmark.circle.fill" : "hammer")
                             .foregroundStyle(statusColor)
                     }
-                    Text(model.status).font(.headline)
+                    Text(verbatim: model.status).font(.headline)
                     Spacer()
                     if hasActivity { Text(model.progress, format: .percent.precision(.fractionLength(0))).font(.caption).foregroundStyle(.secondary).monospacedDigit() }
                 }
                 if hasActivity { ProgressView(value: model.progress).tint(model.resultURL != nil ? .green : .accentColor) }
                 if let result = model.resultURL {
-                    Text(result.lastPathComponent).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
-                    Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([result]) }
+                    Text(verbatim: result.lastPathComponent).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
+                    Button(.localizable(.generalShowInFinder)) { NSWorkspace.shared.activateFileViewerSelecting([result]) }
                 } else if !hasActivity {
-                    Text("Click the play button in the toolbar to create a DMG.\nBuild progress and logs will appear here.")
+                    Text(.localizable(.buildStartHelp))
                         .font(.callout).foregroundStyle(.secondary).lineSpacing(4)
                 }
             }.padding(16)
             Divider()
             HStack {
-                Text("Logs").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                Text(.localizable(.buildLogsTitle)).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 Spacer()
                 Button(action: copyLog) { Image(systemName: "doc.on.doc") }
-                    .buttonStyle(.borderless).help("Copy Entire Build Log").disabled(model.logSteps.isEmpty)
-                    .accessibilityLabel("Copy Entire Build Log")
+                    .buttonStyle(.borderless).help(String(localizable: .buildCopyEntireLog)).disabled(model.logSteps.isEmpty)
+                    .accessibilityLabel(.localizable(.buildCopyEntireLog))
             }.padding(.horizontal, 16).padding(.vertical, 10)
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 8) {
                         if model.logSteps.isEmpty {
-                            Text("No Logs Yet").foregroundStyle(.tertiary)
+                            Text(.localizable(.buildLogsEmpty)).foregroundStyle(.tertiary)
                         } else {
                             ForEach(model.logSteps) { step in
                                 BuildLogStepView(step: step, isExpanded: Binding(
@@ -112,7 +112,7 @@ private struct BuildLogStepView: View {
             HStack(spacing: 8) {
                 statusIcon
                     .frame(width: 12, height: 12)
-                Text(step.heading.message)
+                Text(verbatim: step.heading.message)
                     .font(.callout.weight(.medium))
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -128,7 +128,7 @@ private struct BuildLogStepView: View {
         .padding(10)
         .background(.quaternary.opacity(0.35), in: RoundedRectangle(cornerRadius: 8))
         .contextMenu {
-            Button("Copy Step Log", systemImage: "doc.on.doc") {
+            Button(.localizable(.buildCopyStepLog), systemImage: "doc.on.doc") {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(step.text, forType: .string)
             }
@@ -141,15 +141,15 @@ private struct BuildLogStepView: View {
         case .running:
             ProgressView()
                 .controlSize(.mini)
-                .accessibilityLabel("Running")
+                .accessibilityLabel(.localizable(.buildStepRunning))
         case .succeeded:
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.green)
-                .accessibilityLabel("Completed")
+                .accessibilityLabel(.localizable(.buildStepSucceeded))
         case .failed:
             Image(systemName: "xmark.circle.fill")
                 .foregroundStyle(.red)
-                .accessibilityLabel("Failed")
+                .accessibilityLabel(.localizable(.buildStepFailed))
         }
     }
 
@@ -165,6 +165,6 @@ private struct BuildLogStepView: View {
     }
 
     private func elapsedText(at uptime: TimeInterval) -> Text {
-        Text("\(step.duration(at: uptime), format: .number.precision(.fractionLength(1))) s")
+        Text(.localizable(.buildStepDuration(step.duration(at: uptime))))
     }
 }

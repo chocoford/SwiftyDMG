@@ -70,7 +70,7 @@ final class PackagingModel {
     }
     private(set) var isBuilding = false
     private(set) var progress = 0.0
-    private(set) var status = String(localized: "Ready")
+    private(set) var status = String(localizable: .buildStatusReady)
     private(set) var logSteps: [BuildLogStep] = []
     var buildLogText: String { logSteps.map(\.text).joined(separator: "\n\n") }
     private(set) var resultURL: URL?
@@ -94,12 +94,12 @@ final class PackagingModel {
     func selectApp(_ url: URL) -> Bool {
         guard !isBuilding else { return false }
         guard url.isFileURL, url.pathExtension.lowercased() == "app" else {
-            errorMessage = String(localized: "Select a .app bundle.")
+            errorMessage = String(localizable: .errorSelectApp)
             return false
         }
         guard let metadata = NSDictionary(contentsOf: url.appendingPathComponent("Contents/Info.plist")),
               metadata["CFBundleName"] is String || metadata["CFBundleDisplayName"] is String else {
-            errorMessage = String(localized: "The app’s Info.plist could not be read. Select a valid macOS app.")
+            errorMessage = String(localizable: .errorInvalidAppMetadata)
             return false
         }
         var updated = workspace
@@ -155,14 +155,14 @@ final class PackagingModel {
     private func resetBuildResult() {
         resultURL = nil
         errorMessage = nil
-        status = String(localized: "Ready")
+        status = String(localizable: .buildStatusReady)
         progress = 0
         logSteps = []
     }
 
     func chooseApp() {
         let panel = NSOpenPanel()
-        panel.title = String(localized: "Select an App")
+        panel.title = String(localizable: .dialogSelectApp)
         panel.allowedContentTypes = [.applicationBundle]
         panel.canChooseDirectories = false
         if panel.runModal() == .OK, let url = panel.url { selectApp(url) }
@@ -170,7 +170,7 @@ final class PackagingModel {
 
     func chooseOutput() {
         let panel = NSSavePanel()
-        panel.title = String(localized: "Save DMG")
+        panel.title = String(localizable: .dialogSaveDMG)
         panel.allowedContentTypes = [UTType(filenameExtension: "dmg") ?? .data]
         panel.nameFieldStringValue = outputURL?.lastPathComponent ?? "Application.dmg"
         panel.directoryURL = outputURL?.deletingLastPathComponent()
@@ -188,7 +188,7 @@ final class PackagingModel {
         panel.allowedContentTypes = [.image]
         if panel.runModal() == .OK, let url = panel.url {
             guard NSImage(contentsOf: url)?.isValid == true else {
-                errorMessage = String(localized: "The image could not be read. Select a valid image file.")
+                errorMessage = String(localizable: .errorInvalidImage)
                 return
             }
             if forBackground { options.backgroundURL = url; options.background = .custom }
@@ -198,7 +198,7 @@ final class PackagingModel {
 
     func addFiles() {
         let panel = NSOpenPanel()
-        panel.title = String(localized: "Add to DMG")
+        panel.title = String(localizable: .dialogAddFiles)
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = true
         if panel.runModal() == .OK {
@@ -211,11 +211,11 @@ final class PackagingModel {
         let nameField = NSTextField(string: item.name)
         nameField.frame = NSRect(x: 0, y: 0, width: 280, height: 24)
         let alert = NSAlert()
-        alert.messageText = String(localized: "Rename File")
-        alert.informativeText = String(localized: "This changes the name inside the disk image. The original file is not renamed.")
+        alert.messageText = String(localizable: .dialogRenameFile)
+        alert.informativeText = String(localizable: .dialogRenameFileHelp)
         alert.accessoryView = nameField
-        alert.addButton(withTitle: String(localized: "Rename"))
-        alert.addButton(withTitle: String(localized: "Cancel"))
+        alert.addButton(withTitle: String(localizable: .generalButtonRename))
+        alert.addButton(withTitle: String(localizable: .generalButtonCancel))
         alert.window.initialFirstResponder = nameField
         guard alert.runModal() == .alertFirstButtonReturn,
               !isBuilding, let index = options.extraItems.firstIndex(where: { $0.id == id }) else { return }
@@ -225,7 +225,7 @@ final class PackagingModel {
     func replaceFile(_ id: UUID) {
         guard !isBuilding, let item = options.extraItems.first(where: { $0.id == id }) else { return }
         let panel = NSOpenPanel()
-        panel.title = String(localized: "Replace File")
+        panel.title = String(localizable: .dialogReplaceFile)
         panel.directoryURL = item.url.deletingLastPathComponent()
         panel.canChooseDirectories = true
         guard panel.runModal() == .OK, let url = panel.url,
@@ -249,7 +249,7 @@ final class PackagingModel {
         progress = 0
         logSteps = []
         isBuilding = true
-        status = String(localized: "Preparing")
+        status = String(localizable: .buildStagePreparing)
         Task { [self] in
             let started = ProcessInfo.processInfo.systemUptime
             beginLogStep(.preparing, started: started)
@@ -278,12 +278,12 @@ final class PackagingModel {
                 let result = try await build.value
                 resultURL = result
                 progress = 1
-                status = String(localized: "DMG Created")
-                appendLog(String(localized: "Saved: \(result.path)"), started: started)
+                status = String(localizable: .buildStatusSucceeded)
+                appendLog("Saved: \(result.path)", started: started)
                 finishLogStep(.succeeded)
             } catch {
                 errorMessage = error.localizedDescription
-                status = String(localized: "Build Failed")
+                status = String(localizable: .buildStatusFailed)
                 appendLog(error.localizedDescription, started: started)
                 finishLogStep(.failed)
             }
@@ -320,7 +320,7 @@ final class PackagingModel {
             let preset = try JSONDecoder().decode(PackagingOptions.self, from: Data(contentsOf: url))
             try preset.validate()
             options = preset
-        } catch { errorMessage = String(localized: "Unable to import preset: \(error.localizedDescription)") }
+        } catch { errorMessage = String(localizable: .errorImportPresetFailed(error.localizedDescription)) }
     }
 
     func exportPreset() {

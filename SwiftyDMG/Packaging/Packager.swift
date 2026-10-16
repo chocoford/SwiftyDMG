@@ -22,7 +22,7 @@ actor Packager {
         onProgress: @escaping @Sendable (BuildStage) -> Void = { _ in }
     ) async throws -> URL {
         guard !isBuilding else {
-            throw PackagingError.invalid(String(localized: "Another workspace is creating a DMG. Wait for it to finish and try again."))
+            throw PackagingError.invalid(String(localizable: .errorConcurrentBuild))
         }
         isBuilding = true
         defer { isBuilding = false }
@@ -119,7 +119,7 @@ actor Packager {
                 try fm.removeItem(at: directory)
                 onLog("Removed temporary directory: \(directory.path)")
             } catch {
-                throw PackagingError.cleanup(String(localized: "\(originalError.localizedDescription)\n\nUnable to clean up the temporary image: \(error.localizedDescription)\nTemporary directory: \(directory.path)"))
+                throw PackagingError.cleanup(String(localizable: .errorCleanupFailed(originalError.localizedDescription, error.localizedDescription, directory.path)))
             }
             throw originalError
         }
@@ -138,7 +138,7 @@ actor Packager {
         for prefix in ["Developer ID Application:", "Apple Development:", "Mac Developer:"] {
             if let identity = identities.first(where: { $0.name.hasPrefix(prefix) }) { return identity.hash }
         }
-        throw PackagingError.invalid(String(localized: "No valid Developer ID or development signing certificate was found. Specify an identity or choose None."))
+        throw PackagingError.invalid(String(localizable: .errorSigningIdentityUnavailable))
     }
 
     private func detachOwnedImage(_ image: URL, onLog: @escaping @Sendable (String) -> Void) async throws {

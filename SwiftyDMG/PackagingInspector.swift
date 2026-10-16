@@ -11,35 +11,35 @@ struct PackagingSettingsView: View {
         ScrollViewReader { proxy in
             Form {
                 OutputSettingsSection(model: model)
-                Section("Appearance") {
-                    Picker("Background", selection: $model.options.background) {
-                        Text("Default Background").tag(AssetMode.automatic)
-                        Text("Custom Image").tag(AssetMode.custom)
-                        Text("No Background").tag(AssetMode.none)
+                Section(.localizable(.inspectorAppearanceSection)) {
+                    Picker(.localizable(.inspectorBackground), selection: $model.options.background) {
+                        Text(.localizable(.inspectorDefaultBackground)).tag(AssetMode.automatic)
+                        Text(.localizable(.inspectorCustomImage)).tag(AssetMode.custom)
+                        Text(.localizable(.inspectorNoBackground)).tag(AssetMode.none)
                     }
                     if model.options.background == .custom {
                         InspectorAssetRow(url: model.options.backgroundURL) { model.chooseImage(forBackground: true) }
                     }
                     DiskIconSettingsRow(model: model)
                 }
-                Section("Finder Window") {
+                Section(.localizable(.inspectorFinderWindowSection)) {
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Volume Name").fontWeight(.medium)
-                        TextField("Volume Name", text: Binding(
+                        Text(.localizable(.inspectorVolumeName)).fontWeight(.medium)
+                        TextField(.localizable(.inspectorVolumeName), text: Binding(
                             get: { model.options.volumeName ?? "" },
                             set: { model.options.volumeName = $0.isEmpty ? nil : $0 }
-                        ), prompt: Text(PackagingOptions.defaultVolumeName(for: model.sourceURL)))
+                        ), prompt: Text(verbatim: PackagingOptions.defaultVolumeName(for: model.sourceURL)))
                         .labelsHidden()
                         .textFieldStyle(.roundedBorder)
-                        .help("The name shown when the disk image is mounted. Leave blank to use the app name.")
+                        .help(String(localizable: .inspectorVolumeNameHelp))
                         .accessibilityIdentifier("volumeNameField")
                     }
                     .controlSize(.regular)
                     .padding(.bottom, 8)
-                    LabeledContent("Size") {
+                    LabeledContent(.localizable(.inspectorWindowSize)) {
                         CoordinateFields(
                             first: $model.options.windowWidth, second: $model.options.windowHeight,
-                            firstLabel: "W", secondLabel: "H",
+                            firstLabel: .localizable(.inspectorAxisWidth), secondLabel: .localizable(.inspectorAxisHeight),
                             firstRange: 320...4096, secondRange: 240...4096,
                             firstDefault: PackagingOptions().windowWidth, secondDefault: PackagingOptions().windowHeight
                         )
@@ -49,16 +49,16 @@ struct PackagingSettingsView: View {
                     selectedItemPosition
                     #else
                     PositionSettingsRow(
-                        title: "App Position", x: $model.options.appX, y: $model.options.appY,
-                        resetTitle: "Reset App Position", resetIdentifier: "resetAppPositionButton",
+                        title: .localizable(.inspectorAppPosition), x: $model.options.appX, y: $model.options.appY,
+                        resetTitle: .localizable(.inspectorResetAppPosition), resetIdentifier: "resetAppPositionButton",
                         reset: model.resetAppPosition,
                         maxX: model.options.windowWidth, maxY: model.options.windowHeight
                     )
-                    Toggle("Applications Link", isOn: $model.options.includeApplications)
+                    Toggle(.localizable(.inspectorApplicationsLink), isOn: $model.options.includeApplications)
                     if model.options.includeApplications {
                         PositionSettingsRow(
-                            title: "Link Position", x: $model.options.applicationsX, y: $model.options.applicationsY,
-                            resetTitle: "Reset Link Position", resetIdentifier: "resetLinkPositionButton",
+                            title: .localizable(.inspectorLinkPosition), x: $model.options.applicationsX, y: $model.options.applicationsY,
+                            resetTitle: .localizable(.inspectorResetLinkPosition), resetIdentifier: "resetLinkPositionButton",
                             reset: model.resetApplicationsPosition,
                             maxX: model.options.windowWidth, maxY: model.options.windowHeight,
                             defaultX: PackagingOptions().applicationsX, defaultY: PackagingOptions().applicationsY
@@ -70,16 +70,16 @@ struct PackagingSettingsView: View {
                 AdditionalFilesSettingsSection(model: model)
                 #endif
                 #if SWIFTYDMG_DMG_SIGNING
-                Section("DMG Signing") {
-                    Picker("Signing", selection: $model.options.signing) {
-                        Text("None").tag(SigningMode.none)
-                        Text("Automatically Select Certificate").tag(SigningMode.automatic)
-                        Text("Specific Identity").tag(SigningMode.identity)
+                Section(.localizable(.inspectorSigningSection)) {
+                    Picker(.localizable(.inspectorSigning), selection: $model.options.signing) {
+                        Text(.localizable(.generalNone)).tag(SigningMode.none)
+                        Text(.localizable(.inspectorAutomaticSigning)).tag(SigningMode.automatic)
+                        Text(.localizable(.inspectorSpecificSigningIdentity)).tag(SigningMode.identity)
                     }
                     if model.options.signing == .identity {
-                        TextField("Identity name or SHA-1", text: $model.options.signingIdentity)
+                        TextField(.localizable(.inspectorSigningIdentityPlaceholder), text: $model.options.signingIdentity)
                     }
-                    Text("Only the generated DMG is signed.").font(.caption).foregroundStyle(.secondary)
+                    Text(.localizable(.inspectorSigningHelp)).font(.caption).foregroundStyle(.secondary)
                 }
                 #endif
             }
@@ -98,16 +98,16 @@ struct PackagingSettingsView: View {
         switch selection {
         case .app:
             PositionSettingsRow(
-                title: "Position", x: $model.options.appX, y: $model.options.appY,
-                resetTitle: "Reset App Position", resetIdentifier: "resetAppPositionButton",
+                title: .localizable(.generalPosition), x: $model.options.appX, y: $model.options.appY,
+                resetTitle: .localizable(.inspectorResetAppPosition), resetIdentifier: "resetAppPositionButton",
                 reset: model.resetAppPosition,
                 maxX: model.options.windowWidth, maxY: model.options.windowHeight
             )
         case .applications:
             if model.options.includeApplications {
                 PositionSettingsRow(
-                    title: "Position", x: $model.options.applicationsX, y: $model.options.applicationsY,
-                    resetTitle: "Reset Link Position", resetIdentifier: "resetLinkPositionButton",
+                    title: .localizable(.generalPosition), x: $model.options.applicationsX, y: $model.options.applicationsY,
+                    resetTitle: .localizable(.inspectorResetLinkPosition), resetIdentifier: "resetLinkPositionButton",
                     reset: model.resetApplicationsPosition,
                     maxX: model.options.windowWidth, maxY: model.options.windowHeight,
                     defaultX: PackagingOptions().applicationsX, defaultY: PackagingOptions().applicationsY
@@ -116,7 +116,7 @@ struct PackagingSettingsView: View {
         case .extra(let id):
             ForEach($model.options.extraItems) { $item in
                 if item.id == id {
-                    LabeledContent("Position") {
+                    LabeledContent(.localizable(.generalPosition)) {
                         CoordinateFields(first: $item.x, second: $item.y,
                                          firstRange: 0...model.options.windowWidth, secondRange: 0...model.options.windowHeight)
                     }
@@ -146,10 +146,10 @@ private struct DiskIconSettingsRow: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Picker("Disk Icon", selection: $model.options.diskIcon) {
-                Text("Generate from App").tag(AssetMode.automatic)
-                Text("Custom Image").tag(AssetMode.custom)
-                Text("None").tag(AssetMode.none)
+            Picker(.localizable(.inspectorDiskIcon), selection: $model.options.diskIcon) {
+                Text(.localizable(.inspectorGenerateIconFromApp)).tag(AssetMode.automatic)
+                Text(.localizable(.inspectorCustomImage)).tag(AssetMode.custom)
+                Text(.localizable(.generalNone)).tag(AssetMode.none)
             }
             if model.options.diskIcon == .custom {
                 InspectorAssetRow(url: model.options.diskIconURL) { model.chooseImage(forBackground: false) }
@@ -160,7 +160,7 @@ private struct DiskIconSettingsRow: View {
                         .font(.title2)
                         .foregroundStyle(.secondary)
                         .frame(width: 72, height: 72)
-                    Text("Unable to Preview Icon")
+                    Text(.localizable(.inspectorIconPreviewUnavailable))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .help(previewError)
@@ -169,8 +169,8 @@ private struct DiskIconSettingsRow: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 72, height: 72)
-                        .accessibilityLabel("Disk Icon Preview")
-                        .help("Disk Icon Preview")
+                        .accessibilityLabel(.localizable(.inspectorDiskIconPreview))
+                        .help(String(localizable: .inspectorDiskIconPreview))
                 }
             }
             .frame(maxWidth: .infinity)
@@ -214,37 +214,37 @@ private struct AdditionalFilesSettingsSection: View {
     @Bindable var model: PackagingModel
 
     var body: some View {
-        Section("Additional Files") {
+        Section(.localizable(.inspectorAdditionalFilesSection)) {
             ForEach($model.options.extraItems) { $item in
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(spacing: 8) {
-                        TextField("File Name", text: $item.name)
+                        TextField(.localizable(.generalFileName), text: $item.name)
                             .labelsHidden().textFieldStyle(.roundedBorder)
                         Menu {
-                            Button("Replace File…") { model.replaceFile(item.id) }
-                            Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([item.url]) }
+                            Button(.localizable(.sidebarReplaceFile)) { model.replaceFile(item.id) }
+                            Button(.localizable(.generalShowInFinder)) { NSWorkspace.shared.activateFileViewerSelecting([item.url]) }
                             Divider()
-                            Button("Remove", role: .destructive) {
+                            Button(.localizable(.generalButtonRemove), role: .destructive) {
                                 model.options.extraItems.removeAll { $0.id == item.id }
                             }
-                        } label: { Label("File Actions", systemImage: "ellipsis") }
+                        } label: { Label(.localizable(.inspectorFileActions), systemImage: "ellipsis") }
                         .labelStyle(.iconOnly)
                         .menuIndicator(.hidden)
-                        .help("File Actions")
+                        .help(String(localizable: .inspectorFileActions))
                     }
-                    LabeledContent("Position") {
+                    LabeledContent(.localizable(.generalPosition)) {
                         CoordinateFields(first: $item.x, second: $item.y,
                                          firstRange: 0...model.options.windowWidth, secondRange: 0...model.options.windowHeight)
                     }
                     .labeledContentStyle(InspectorInlineRowStyle())
                     if !FileManager.default.fileExists(atPath: item.url.path) {
-                        Label("File not found. Use Replace File to locate it.", systemImage: "exclamationmark.triangle")
+                        Label(.localizable(.inspectorMissingFileMessage), systemImage: "exclamationmark.triangle")
                             .font(.caption).foregroundStyle(.orange)
                     }
                 }
                 .padding(.vertical, 8)
             }
-            Button(action: model.addFiles) { Label("Add Files…", systemImage: "plus") }
+            Button(action: model.addFiles) { Label(.localizable(.inspectorAddFiles), systemImage: "plus") }
         }
         .controlSize(.regular)
     }
@@ -259,44 +259,44 @@ private struct OutputSettingsSection: View {
     }
 
     private var directoryPath: String {
-        directoryURL?.path ?? String(localized: "No Folder Selected")
+        directoryURL?.path ?? String(localizable: .inspectorNoSaveLocation)
     }
 
     var body: some View {
-        Section("Output") {
+        Section(.localizable(.inspectorOutputSection)) {
             LabeledContent {
                 HStack(spacing: 8) {
-                    TextField("File Name", text: $model.outputName)
+                    TextField(.localizable(.generalFileName), text: $model.outputName)
                         .labelsHidden()
                         .textFieldStyle(.roundedBorder)
-                        .help("The .dmg extension is added automatically.")
+                        .help(String(localizable: .inspectorFileExtensionHelp))
                         .accessibilityIdentifier("outputNameField")
-                    Text(".dmg").foregroundStyle(.secondary)
+                    Text(verbatim: ".dmg").foregroundStyle(.secondary)
                 }
             } label: {
-                InspectorResetLabel(title: "File Name", resetTitle: "Reset File Name",
+                InspectorResetLabel(title: .localizable(.generalFileName), resetTitle: .localizable(.inspectorResetFileName),
                                     resetIdentifier: "resetOutputNameButton", reset: model.resetOutputName,
                                     canReset: model.sourceURL != nil)
             }
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("Save Location").fontWeight(.medium)
+                    Text(.localizable(.inspectorSaveLocation)).fontWeight(.medium)
                     Spacer(minLength: 12)
-                    Button("Change…", action: model.chooseOutput)
+                    Button(.localizable(.generalButtonChange), action: model.chooseOutput)
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Image(systemName: "folder")
                         .foregroundStyle(.secondary)
                         .accessibilityHidden(true)
-                    Text(directoryPath)
+                    Text(verbatim: directoryPath)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .lineLimit(3)
                         .truncationMode(.middle)
                         .textSelection(.enabled)
                         .help(directoryPath)
-                    Button("Open Save Location in Finder", systemImage: "arrow.right.circle.fill") {
+                    Button(.localizable(.inspectorOpenSaveLocation), systemImage: "arrow.right.circle.fill") {
                         guard let directoryURL else { return }
                         NSWorkspace.shared.open(directoryURL)
                     }
@@ -305,7 +305,7 @@ private struct OutputSettingsSection: View {
                     .font(.callout)
                     .controlSize(.regular)
                     .imageScale(.medium)
-                    .help("Open Save Location in Finder")
+                    .help(String(localizable: .inspectorOpenSaveLocation))
                     .disabled(directoryURL == nil)
                     .accessibilityIdentifier("openOutputFolderButton")
                 }
@@ -409,9 +409,9 @@ private struct InspectorAssetRow: View {
 
     var body: some View {
         HStack {
-            Text(url?.lastPathComponent ?? String(localized: "Not Selected")).font(.caption).lineLimit(1).truncationMode(.middle)
+            Text(verbatim: url?.lastPathComponent ?? String(localizable: .generalNotSelected)).font(.caption).lineLimit(1).truncationMode(.middle)
             Spacer()
-            Button("Choose…", action: action)
+            Button(.localizable(.generalButtonChoose), action: action)
         }
     }
 }
@@ -419,8 +419,8 @@ private struct InspectorAssetRow: View {
 struct CoordinateFields: View {
     @Binding var first: Double
     @Binding var second: Double
-    var firstLabel: LocalizedStringResource = "X"
-    var secondLabel: LocalizedStringResource = "Y"
+    var firstLabel: LocalizedStringResource = .localizable(.inspectorAxisX)
+    var secondLabel: LocalizedStringResource = .localizable(.inspectorAxisY)
     var firstRange: ClosedRange<Double> = 0...4096
     var secondRange: ClosedRange<Double> = 0...4096
     var firstDefault: Double?

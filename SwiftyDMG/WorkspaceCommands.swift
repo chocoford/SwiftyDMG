@@ -8,26 +8,26 @@ struct WorkspaceCommands: Commands {
         #if SWIFTYDMG_WORKSPACE_SAVING
         // DocumentGroup supplies New, Open, Save, Save As, and Open Recent.
         CommandGroup(after: .newItem) {
-            Button("New Workspace from App…", action: delegate.newWorkspaceFromApp)
+            Button(.localizable(.menuNewWorkspaceFromApp), action: delegate.newWorkspaceFromApp)
                 .keyboardShortcut("o", modifiers: [.command, .shift])
         }
         #else
         CommandGroup(replacing: .newItem) {
-            Button("New Window", action: delegate.newWorkspace)
+            Button(.localizable(.menuNewWindow), action: delegate.newWorkspace)
                 .keyboardShortcut("n")
-            Button("Open App…", action: delegate.openApp)
+            Button(.localizable(.menuOpenApp), action: delegate.openApp)
                 .keyboardShortcut("o")
         }
         CommandGroup(replacing: .saveItem) {}
         #endif
         #if SWIFTYDMG_WORKSPACE_SAVING
-        CommandMenu("Presets") {
-            Button("Import Preset…") { model?.importPreset() }
+        CommandMenu(.localizable(.menuPresets)) {
+            Button(.localizable(.menuImportPreset)) { model?.importPreset() }
                 .disabled(model == nil || model?.isBuilding == true)
-            Button("Export Preset…") { model?.exportPreset() }
+            Button(.localizable(.menuExportPreset)) { model?.exportPreset() }
                 .disabled(model == nil)
             Divider()
-            Button("Reset to Defaults") { model?.options = .init() }
+            Button(.localizable(.menuResetDefaults)) { model?.options = .init() }
                 .disabled(model == nil || model?.isBuilding == true)
         }
         #endif

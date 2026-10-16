@@ -22,11 +22,27 @@ The project directly references these sibling packages for local development:
 as a remote package dependency. AppDMG performs disk-image creation and Finder
 layout decoration; hdiutil and DSStoreKit support those operations.
 
-English is the source language. `SwiftyDMG/Localizable.xcstrings` is included in the
-app target, with string extraction enabled for Debug and Release. Xcode populates
-the catalog on build. Keep SwiftUI text as localized literals and use
-`String(localized:)` for model messages and AppKit controls. Translate complete
-sentences, preserving interpolated file names and paths as user content.
+English is the source language. `SwiftyDMG/Localizable.xcstrings` is maintained
+manually with lowerCamelCase semantic keys and complete English source values.
+The `XCStringsToolPlugin` build tool generates typed accessors for both the app
+and the standalone packaging test target. Generated Swift files stay in DerivedData.
+
+Use `Text(.localizable(.welcomeTitle))` for SwiftUI text and
+`String(localizable: .dialogOpenApp)` for model messages and AppKit controls.
+Custom labels use the generated `LocalizedStringKey.localizable(_:)` or
+`LocalizedStringResource.localizable(_:)` accessors. Add new keys to the catalog
+explicitly and keep their `extractionState` set to `manual`. Translate complete
+sentences, preserving parameterized file names, paths and errors as user content.
+The catalog includes the same 18 languages as ExcalidrawZ. Non-English entries
+start with the English source value and `state: new` inside a `stringUnit` object;
+they remain untranslated until their translations are filled in.
+
+`SWIFT_EMIT_LOC_STRINGS` and `LOCALIZED_STRING_SWIFTUI_SUPPORT` are disabled in
+Debug and Release, following ExcalidrawZ's localization setup. Automatic Xcode
+string-symbol generation is disabled as well; the plugin owns the typed API.
+Commands, raw tool output, paths, filenames and numeric dimensions remain ordinary
+strings and use `Text(verbatim:)` when displayed directly. Diagnostic log messages
+are not added to the catalog.
 
 ## Features
 

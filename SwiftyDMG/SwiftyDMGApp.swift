@@ -111,7 +111,7 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
 
     private func chooseAppForWorkspace(reuseEmptyWindow: Bool) {
         let panel = NSOpenPanel()
-        panel.title = String(localized: "Open App")
+        panel.title = String(localizable: .dialogOpenApp)
         panel.allowedContentTypes = [.applicationBundle]
         panel.canChooseDirectories = false
         guard panel.runModal() == .OK, let url = panel.url else { return }
@@ -121,7 +121,7 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
     private func createWorkspace(for url: URL, reuseEmptyWindow: Bool) {
         let candidate = PackagingModel()
         guard candidate.selectApp(url) else {
-            NSApp.presentError(PackagingError.invalid(candidate.errorMessage ?? String(localized: "Unable to open this app.")))
+            NSApp.presentError(PackagingError.invalid(candidate.errorMessage ?? String(localizable: .errorOpenAppFailed)))
             return
         }
         if reuseEmptyWindow,
@@ -172,7 +172,7 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
                     }
                 }
                 #else
-                NSApp.presentError(PackagingError.invalid(String(localized: "Select a .app bundle.")))
+                NSApp.presentError(PackagingError.invalid(String(localizable: .errorSelectApp)))
                 #endif
             }
         }
@@ -184,7 +184,7 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
             urls = paths.map { URL(fileURLWithPath: $0) }
         }
         guard urls.count == 1, urls[0].pathExtension.lowercased() == "app" else {
-            error.pointee = String(localized: "Select one .app in Finder.") as NSString
+            error.pointee = String(localizable: .errorFinderServiceSelection) as NSString
             return
         }
         createWorkspace(for: urls[0], reuseEmptyWindow: true)
@@ -193,9 +193,9 @@ final class ApplicationDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         if sessions.values.contains(where: { $0.model?.isBuilding == true }) {
             let alert = NSAlert()
-            alert.messageText = String(localized: "Creating DMG")
-            alert.informativeText = String(localized: "Wait for the current build to finish before quitting so temporary disk images can be safely unmounted.")
-            alert.addButton(withTitle: String(localized: "Continue Building"))
+            alert.messageText = String(localizable: .dialogBuildInProgress)
+            alert.informativeText = String(localizable: .dialogQuitDuringBuildHelp)
+            alert.addButton(withTitle: String(localizable: .dialogContinueBuilding))
             alert.runModal()
             return .terminateCancel
         }

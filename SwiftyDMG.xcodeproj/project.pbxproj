@@ -37,6 +37,7 @@
 		D40000000000000000000102 /* WorkspaceCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000002 /* WorkspaceCommands.swift */; };
 		D40000000000000000000103 /* WorkspaceSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* WorkspaceSidebar.swift */; };
 		E50000000000000000000101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* Localizable.xcstrings */; };
+		E60000000000000000000101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -187,6 +188,9 @@
 			);
 			buildRules = (
 			);
+			dependencies = (
+				39D11DE73081F6A700519F04 /* PBXTargetDependency */,
+			);
 			name = SwiftyDMG;
 			packageProductDependencies = (
 				A10000000000000000000012 /* Sparkle */,
@@ -207,6 +211,9 @@
 				B20000000000000000000006 /* Resources */,
 			);
 			buildRules = (
+			);
+			dependencies = (
+				E60000000000000000000102 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B20000000000000000000003 /* SwiftyDMGTests */,
@@ -245,6 +252,23 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
+				"zh-Hant",
+				ja,
+				ko,
+				fr,
+				de,
+				es,
+				it,
+				pt,
+				nl,
+				pl,
+				ru,
+				ar,
+				hi,
+				th,
+				tr,
+				vi,
 			);
 			mainGroup = 000000000000000000000001;
 			minimizedProjectReferenceProxies = 1;
@@ -253,6 +277,7 @@
 				B10000000000000000000011 /* XCLocalSwiftPackageReference "../AppDMG" */,
 				B10000000000000000000012 /* XCLocalSwiftPackageReference "../hdiutil" */,
 				B10000000000000000000013 /* XCLocalSwiftPackageReference "../DSStoreKit" */,
+				39D11DE23081F68F00519F04 /* XCRemoteSwiftPackageReference "xcstrings-tool-plugin" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 000000000000000000000020 /* Products */;
@@ -278,6 +303,7 @@
 		B20000000000000000000006 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				E60000000000000000000101 /* Localizable.xcstrings in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
@@ -313,6 +339,17 @@
 			);
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		39D11DE73081F6A700519F04 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 39D11DE63081F6A700519F04 /* XCStringsToolPlugin */;
+		};
+		E60000000000000000000102 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = E60000000000000000000103 /* XCStringsToolPlugin */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		000000000000000011000000 /* Debug configuration for PBXProject "SwiftyDMG" */ = {
@@ -374,7 +411,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PROJECT_UNIQUE_VALUE = ADDZ8TDW;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -432,7 +469,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PROJECT_UNIQUE_VALUE = ADDZ8TDW;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -455,12 +492,13 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LOCALIZED_STRING_SWIFTUI_SUPPORT = NO;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMG;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 			};
@@ -483,12 +521,13 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LOCALIZED_STRING_SWIFTUI_SUPPORT = NO;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMG;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
-				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 			};
@@ -508,11 +547,13 @@
 					"@loader_path/../Frameworks",
 					"@executable_path/../Frameworks",
 				);
+				LOCALIZED_STRING_SWIFTUI_SUPPORT = NO;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMGTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "";
@@ -533,11 +574,13 @@
 					"@loader_path/../Frameworks",
 					"@executable_path/../Frameworks",
 				);
+				LOCALIZED_STRING_SWIFTUI_SUPPORT = NO;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.chocoford.SwiftyDMGTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_STRICT_CONCURRENCY = targeted;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "";
@@ -597,6 +640,14 @@
 				version = 2.10.0;
 			};
 		};
+		39D11DE23081F68F00519F04 /* XCRemoteSwiftPackageReference "xcstrings-tool-plugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/liamnichols/xcstrings-tool-plugin";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -616,6 +667,16 @@
 		B10000000000000000000023 /* DSStoreKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DSStoreKit;
+		};
+		39D11DE63081F6A700519F04 /* XCStringsToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39D11DE23081F68F00519F04 /* XCRemoteSwiftPackageReference "xcstrings-tool-plugin" */;
+			productName = "plugin:XCStringsToolPlugin";
+		};
+		E60000000000000000000103 /* XCStringsToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39D11DE23081F68F00519F04 /* XCRemoteSwiftPackageReference "xcstrings-tool-plugin" */;
+			productName = "plugin:XCStringsToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

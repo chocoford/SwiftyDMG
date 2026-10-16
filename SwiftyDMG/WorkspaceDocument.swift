@@ -29,13 +29,13 @@ struct WorkspaceDocument: FileDocument, Sendable {
         }
         let archive = try JSONDecoder().decode(WorkspaceArchive.self, from: data)
         guard archive.formatVersion == 1 else {
-            throw PackagingError.invalid(String(localized: "This workspace file version is not supported."))
+            throw PackagingError.invalid(String(localizable: .errorWorkspaceVersion))
         }
         workspace = archive.restoredWorkspace()
         let references = [workspace.sourceURL, workspace.outputURL, workspace.options.backgroundURL, workspace.options.diskIconURL]
             .compactMap { $0 } + workspace.options.extraItems.map(\.url)
         guard references.allSatisfy(\.isFileURL) else {
-            throw PackagingError.invalid(String(localized: "The app and assets in a workspace must refer to local files."))
+            throw PackagingError.invalid(String(localizable: .errorWorkspaceFileReferences))
         }
     }
 

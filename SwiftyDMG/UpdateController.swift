@@ -34,7 +34,7 @@ final class UpdateController: ObservableObject {
 struct CheckForUpdatesView: View {
     @ObservedObject var updates: UpdateController
     var body: some View {
-        Button("Check for Updates…", action: updates.check).disabled(!updates.canCheck)
+        Button(.localizable(.updatesCheck), action: updates.check).disabled(!updates.canCheck)
     }
 }
 
@@ -42,18 +42,18 @@ struct UpdateSettingsView: View {
     @ObservedObject var updates: UpdateController
     var body: some View {
         Form {
-            Section("Software Updates") {
-                Toggle("Automatically Check for Updates", isOn: Binding(get: { updates.automaticChecks }, set: updates.setAutomaticChecks))
-                Toggle("Automatically Download Updates", isOn: Binding(get: { updates.automaticDownloads }, set: updates.setAutomaticDownloads))
+            Section(.localizable(.updatesSection)) {
+                Toggle(.localizable(.updatesAutomaticChecks), isOn: Binding(get: { updates.automaticChecks }, set: updates.setAutomaticChecks))
+                Toggle(.localizable(.updatesAutomaticDownloads), isOn: Binding(get: { updates.automaticDownloads }, set: updates.setAutomaticDownloads))
                 CheckForUpdatesView(updates: updates)
             }.disabled(!updates.isConfigured)
             if !updates.isConfigured {
-                Text("Updates are not enabled in this build.")
+                Text(.localizable(.updatesDisabledMessage))
                     .foregroundStyle(.secondary)
             }
-            Section("Finder Service") {
-                Text("Move SwiftyDMG to the Applications folder and launch it once. Then select an app in Finder and choose Services → Create DMG with SwiftyDMG from its context menu.")
-                Text("If the service is missing, enable it in System Settings → Keyboard → Keyboard Shortcuts → Services.")
+            Section(.localizable(.finderServiceSection)) {
+                Text(.localizable(.finderServiceInstructions))
+                Text(.localizable(.finderServiceEnableHelp))
                     .foregroundStyle(.secondary)
             }
         }

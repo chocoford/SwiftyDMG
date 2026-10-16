@@ -43,7 +43,7 @@ struct PackagingOptions: Codable, Equatable, Sendable {
     init() {}
 
     static func defaultVolumeName(for sourceURL: URL?) -> String {
-        guard let sourceURL else { return String(localized: "Disk Image") }
+        guard let sourceURL else { return String(localizable: .defaultVolumeName) }
         let metadata = NSDictionary(contentsOf: sourceURL.appendingPathComponent("Contents/Info.plist"))
         return metadata?["CFBundleDisplayName"] as? String
             ?? metadata?["CFBundleName"] as? String
@@ -59,20 +59,20 @@ struct PackagingOptions: Codable, Equatable, Sendable {
         if let volumeName {
             guard !volumeName.contains("/"), !volumeName.contains(":"),
                   volumeName.rangeOfCharacter(from: .controlCharacters) == nil else {
-                throw PackagingError.invalid(String(localized: "The volume name cannot contain slashes, colons, or control characters."))
+                throw PackagingError.invalid(String(localizable: .errorInvalidVolumeName))
             }
         }
         guard windowWidth.isFinite, windowHeight.isFinite,
               (320...4096).contains(windowWidth), (240...4096).contains(windowHeight) else {
-            throw PackagingError.invalid(String(localized: "Window width must be 320–4096 and height must be 240–4096."))
+            throw PackagingError.invalid(String(localizable: .errorInvalidWindowSize))
         }
-        try validatePosition(x: appX, y: appY, name: "App")
+        try validatePosition(x: appX, y: appY, name: String(localizable: .generalApp))
         if includeApplications {
-            try validatePosition(x: applicationsX, y: applicationsY, name: "Applications")
+            try validatePosition(x: applicationsX, y: applicationsY, name: String(localizable: .sidebarApplications))
         }
         let assets = [
-            (background, backgroundURL, String(localized: "Select a valid background image.")),
-            (diskIcon, diskIconURL, String(localized: "Select a valid disk icon."))
+            (background, backgroundURL, String(localizable: .errorSelectBackground)),
+            (diskIcon, diskIconURL, String(localizable: .errorSelectDiskIcon))
         ]
         for (mode, url, message) in assets {
             if mode == .custom {
@@ -85,7 +85,7 @@ struct PackagingOptions: Codable, Equatable, Sendable {
             }
         }
         if signing == .identity && signingIdentity.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            throw PackagingError.invalid(String(localized: "Enter a signing identity name or SHA-1."))
+            throw PackagingError.invalid(String(localizable: .errorEmptySigningIdentity))
         }
         var names: Set<String> = [".ds_store", ".background", ".volumeicon.icns"]
         if includeApplications { names.insert("applications") }
@@ -93,10 +93,10 @@ struct PackagingOptions: Codable, Equatable, Sendable {
             guard !item.name.isEmpty, item.name != ".", item.name != "..",
                   !item.name.contains("/"), !item.name.contains(":"), !item.name.contains("\0"),
                   names.insert(item.name.lowercased()).inserted else {
-                throw PackagingError.invalid(String(localized: "Invalid or duplicate additional file name: \(item.name)"))
+                throw PackagingError.invalid(String(localizable: .errorInvalidAdditionalFileName(item.name)))
             }
             guard item.url.isFileURL, FileManager.default.fileExists(atPath: item.url.path) else {
-                throw PackagingError.invalid(String(localized: "Additional file not found: \(item.url.path)"))
+                throw PackagingError.invalid(String(localizable: .errorAdditionalFileMissing(item.url.path)))
             }
             try validatePosition(x: item.x, y: item.y, name: item.name)
         }
@@ -104,7 +104,7 @@ struct PackagingOptions: Codable, Equatable, Sendable {
 
     private func validatePosition(x: Double, y: Double, name: String) throws {
         guard x.isFinite, y.isFinite, (0...windowWidth).contains(x), (0...windowHeight).contains(y) else {
-            throw PackagingError.invalid(String(localized: "The icon position for \(name) must be inside the window."))
+            throw PackagingError.invalid(String(localizable: .errorIconOutsideWindow(name)))
         }
     }
 }
@@ -140,27 +140,27 @@ struct PackagingRequest: Sendable {
               let metadata = NSDictionary(contentsOf: sourceURL.appendingPathComponent("Contents/Info.plist")),
               let name = metadata["CFBundleDisplayName"] as? String ?? metadata["CFBundleName"] as? String,
               !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw PackagingError.invalid(String(localized: "Select a .app bundle with a valid Info.plist."))
+            throw PackagingError.invalid(String(localizable: .errorInvalidAppBundle))
         }
         let source = sourceURL.resolvingSymlinksInPath().standardizedFileURL.path
         let output = outputURL.resolvingSymlinksInPath().standardizedFileURL.path
         let filename = outputURL.lastPathComponent
         if filename.lowercased().hasSuffix(".dmg"),
            String(filename.dropLast(4)).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            throw PackagingError.invalid(String(localized: "Enter an output file name."))
+            throw PackagingError.invalid(String(localizable: .errorEmptyOutputName))
         }
         guard outputURL.isFileURL, outputURL.pathExtension.lowercased() == "dmg",
               !output.hasPrefix(source + "/") else {
-            throw PackagingError.invalid(String(localized: "The output must be a .dmg file outside the app bundle."))
+            throw PackagingError.invalid(String(localizable: .errorInvalidOutputLocation))
         }
         var isDirectory: ObjCBool = false
         if FileManager.default.fileExists(atPath: output, isDirectory: &isDirectory) {
             guard !isDirectory.boolValue, replaceExisting else {
-                throw PackagingError.invalid(String(localized: "The output already exists. Confirm replacement or choose another file name."))
+                throw PackagingError.invalid(String(localizable: .errorOutputAlreadyExists))
             }
         }
         for item in options.extraItems where item.name.lowercased() == sourceURL.lastPathComponent.lowercased() {
-            throw PackagingError.invalid(String(localized: "An additional file has the same name as the app: \(item.name)"))
+            throw PackagingError.invalid(String(localizable: .errorAdditionalFileMatchesApp(item.name)))
         }
     }
 }
@@ -170,18 +170,18 @@ enum BuildStage: Int, Sendable {
 
     var title: String {
         switch self {
-        case .preparing: String(localized: "Preparing")
-        case .creating: String(localized: "Creating Disk Image")
-        case .attaching: String(localized: "Mounting Image")
-        case .background: String(localized: "Setting Background")
-        case .extras: String(localized: "Adding Files and Links")
-        case .icon: String(localized: "Setting Disk Icon")
-        case .layout: String(localized: "Applying Finder Layout")
-        case .permissions: String(localized: "Setting Permissions")
-        case .detaching: String(localized: "Unmounting Image")
-        case .compressing: String(localized: "Compressing Image")
-        case .signing: String(localized: "Signing Image")
-        case .saving: String(localized: "Saving DMG")
+        case .preparing: String(localizable: .buildStagePreparing)
+        case .creating: String(localizable: .buildStageCreating)
+        case .attaching: String(localizable: .buildStageMounting)
+        case .background: String(localizable: .buildStageBackground)
+        case .extras: String(localizable: .buildStageFiles)
+        case .icon: String(localizable: .buildStageIcon)
+        case .layout: String(localizable: .buildStageLayout)
+        case .permissions: String(localizable: .buildStagePermissions)
+        case .detaching: String(localizable: .buildStageUnmounting)
+        case .compressing: String(localizable: .buildStageCompressing)
+        case .signing: String(localizable: .buildStageSigning)
+        case .saving: String(localizable: .buildStageSaving)
         }
     }
     var fraction: Double { Double(rawValue + 1) / 13 }

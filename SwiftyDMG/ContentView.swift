@@ -4,7 +4,7 @@ import SwiftUI
 enum InspectorTab: String, CaseIterable, Identifiable {
     case settings, activity
     var id: Self { self }
-    var title: LocalizedStringKey { self == .settings ? "Settings" : "Build" }
+    var title: LocalizedStringKey { self == .settings ? .localizable(.inspectorTabSettings) : .localizable(.inspectorTabBuild) }
     var symbol: String { self == .settings ? "slider.horizontal.3" : "list.bullet.rectangle" }
 }
 
@@ -71,8 +71,8 @@ struct ContentView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         withAnimation { inspectorPresented.toggle() }
-                    } label: { Label("Inspector", systemImage: "sidebar.right") }
-                    .help("Show or Hide Inspector")
+                    } label: { Label(.localizable(.toolbarInspector), systemImage: "sidebar.right") }
+                    .help(String(localizable: .toolbarToggleInspectorHelp))
                     .accessibilityIdentifier("toggleInspectorButton")
                 }
                 ToolbarItem(placement: .primaryAction) {
@@ -81,12 +81,12 @@ struct ContentView: View {
                             ProgressView()
                                 .controlSize(.small)
                         } else {
-                            Label("Create DMG", systemImage: "play.fill")
+                            Label(.localizable(.toolbarCreateDMG), systemImage: "play.fill")
                         }
                     }
                     .disabled(model.isBuilding)
                     .keyboardShortcut(.return, modifiers: .command)
-                    .help("Create DMG (⌘↩)")
+                    .help(String(localizable: .toolbarCreateDMGHelp))
                     .accessibilityIdentifier("createDMGButton")
                 }
             }
@@ -104,14 +104,14 @@ struct ContentView: View {
                 inspectorPresented = true
             }
         }
-        .alert("Unable to Complete Operation", isPresented: Binding(get: { model.errorMessage != nil }, set: { if !$0 { model.errorMessage = nil } })) {
-            Button("Copy Error", action: copyError)
-            Button("OK", role: .cancel) {}
-        } message: { Text(model.errorMessage ?? "") }
-        .confirmationDialog("Replace Existing DMG?", isPresented: $model.confirmReplacement, titleVisibility: .visible) {
-            Button("Replace", role: .destructive) { model.startBuild(replaceExisting: true) }
-            Button("Cancel", role: .cancel) {}
-        } message: { Text("\(model.outputURL?.lastPathComponent ?? "DMG") will be replaced only after the build succeeds.") }
+        .alert(.localizable(.dialogOperationFailed), isPresented: Binding(get: { model.errorMessage != nil }, set: { if !$0 { model.errorMessage = nil } })) {
+            Button(.localizable(.dialogCopyError), action: copyError)
+            Button(.localizable(.generalButtonOK), role: .cancel) {}
+        } message: { Text(verbatim: model.errorMessage ?? "") }
+        .confirmationDialog(.localizable(.dialogReplaceImage), isPresented: $model.confirmReplacement, titleVisibility: .visible) {
+            Button(.localizable(.generalButtonReplace), role: .destructive) { model.startBuild(replaceExisting: true) }
+            Button(.localizable(.generalButtonCancel), role: .cancel) {}
+        } message: { Text(.localizable(.dialogReplaceImageMessage(model.outputURL?.lastPathComponent ?? "DMG"))) }
     }
 
     @ViewBuilder
@@ -254,7 +254,7 @@ private struct InspectorTabPicker: View {
         .padding(3)
         .background(.quaternary.opacity(0.5), in: Capsule())
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Inspector")
+        .accessibilityLabel(.localizable(.toolbarInspector))
     }
 }
 
