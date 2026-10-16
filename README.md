@@ -20,11 +20,13 @@ SwiftyDMG/
   Preview/              Finder layout preview and canvas controls
   Updates/              Sparkle controller and update settings
   Resources/            DMG background
-AppIcon.icon/            Icon Composer app icon
-Assets.xcassets/         Asset catalog
-Localizable.xcstrings    Manually maintained string catalog
+  AppIcon.icon/          Icon Composer app icon
+  Assets.xcassets/       Asset catalog
+  Localizable.xcstrings Manually maintained string catalog
+  Info.plist            App metadata and Finder service registration
+  Debug.entitlements    Development signing entitlements
+  Release.xcconfig      Version, optional features and Sparkle update settings
 SwiftyDMGTests/          Xcode packaging regression tests
-Configuration/           Info.plist, entitlements, version and Sparkle update settings
 Scripts/                 Native release preparation
 Docs/                    Release instructions
 ```
@@ -34,7 +36,7 @@ The project directly references these sibling packages for local development:
 as a remote package dependency. AppDMG performs disk-image creation and Finder
 layout decoration; hdiutil and DSStoreKit support those operations.
 
-English is the source language. `Localizable.xcstrings` is maintained
+English is the source language. `SwiftyDMG/Localizable.xcstrings` is maintained
 manually with lowerCamelCase semantic keys and complete English source values.
 The `XCStringsToolPlugin` build tool generates typed accessors for both the app
 and the standalone packaging test target. Generated Swift files stay in DerivedData.
@@ -98,7 +100,7 @@ state; other windows remain editable.
 
 The first release disables the sidebar and workspace saving, and hides the
 Additional Files and DMG Signing inspector sections. Their gates live in
-`Configuration/Release.xcconfig` and apply to Debug and Release. Empty values disable
+`SwiftyDMG/Release.xcconfig` and apply to Debug and Release. Empty values disable
 them; enable each independently by setting its value to the matching token:
 
 ```xcconfig
@@ -155,7 +157,7 @@ Finder does not show it. The service opens a selected App for settings review.
 
 ## Updates and distribution
 
-`Configuration/Release.xcconfig` supplies the version, numeric build, GitHub Releases
+`SwiftyDMG/Release.xcconfig` supplies the version, numeric build, GitHub Releases
 feed and Sparkle public key. The public key is configured for the
 `com.chocoford.SwiftyDMG` Keychain account. Publish `appcast.xml` and the update ZIP
 as GitHub Release assets to make updates available. See [release instructions](Docs/Release.md).

@@ -2,7 +2,7 @@
 
 ## Configuration
 
-Edit `Configuration/Release.xcconfig`:
+Edit `SwiftyDMG/Release.xcconfig`:
 
 - `MARKETING_VERSION`: user-visible version.
 - `CURRENT_PROJECT_VERSION`: increasing numeric build number.

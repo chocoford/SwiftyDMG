@@ -132,11 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				39A9DF11307FE726004704F3 /* SwiftyDMG */,
-				39A9DF583080CA5E004704F3 /* AppIcon.icon */,
-				E50000000000000000000001 /* Localizable.xcstrings */,
-				39A9DF09307FE726004704F3 /* Assets.xcassets */,
 				000000000000000000000020 /* Products */,
-				F70000000000000000000021 /* Configuration */,
 				B20000000000000000000003 /* SwiftyDMGTests */,
 				B20000000000000000000008 /* Packaging Test Sources */,
 			);
@@ -174,6 +170,8 @@
 		39A9DF11307FE726004704F3 /* SwiftyDMG */ = {
 			isa = PBXGroup;
 			children = (
+				A10000000000000000000041 /* Release.xcconfig */,
+				39A9DF0C307FE726004704F3 /* Info.plist */,
 				39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */,
 				F70000000000000000000001 /* AppDelegate.swift */,
 				39A9DF0A307FE726004704F3 /* ContentView.swift */,
@@ -183,6 +181,10 @@
 				F7000000000000000000001F /* Preview */,
 				F70000000000000000000020 /* Updates */,
 				39A9DF08307FE726004704F3 /* Resources */,
+				39A9DF583080CA5E004704F3 /* AppIcon.icon */,
+				39A9DF09307FE726004704F3 /* Assets.xcassets */,
+				39A9DF0B307FE726004704F3 /* Debug.entitlements */,
+				E50000000000000000000001 /* Localizable.xcstrings */,
 			);
 			path = SwiftyDMG;
 			sourceTree = "<group>";
@@ -245,16 +247,6 @@
 				F70000000000000000000013 /* UpdateSettingsView.swift */,
 			);
 			path = Updates;
-			sourceTree = "<group>";
-		};
-		F70000000000000000000021 /* Configuration */ = {
-			isa = PBXGroup;
-			children = (
-				A10000000000000000000041 /* Release.xcconfig */,
-				39A9DF0C307FE726004704F3 /* Info.plist */,
-				39A9DF0B307FE726004704F3 /* Debug.entitlements */,
-			);
-			path = Configuration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -576,14 +568,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Configuration/Debug.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SwiftyDMG/Debug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3XKM749Y3L;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Configuration/Info.plist;
+				INFOPLIST_FILE = SwiftyDMG/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -612,7 +604,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Configuration/Info.plist;
+				INFOPLIST_FILE = SwiftyDMG/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

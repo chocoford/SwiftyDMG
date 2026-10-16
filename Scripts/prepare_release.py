@@ -16,7 +16,7 @@ def run(arguments, **kwargs):
 
 def read_configuration():
     values = {}
-    for line in (ROOT / "Configuration/Release.xcconfig").read_text().splitlines():
+    for line in (ROOT / "SwiftyDMG/Release.xcconfig").read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("//") or "=" not in line:
             continue
