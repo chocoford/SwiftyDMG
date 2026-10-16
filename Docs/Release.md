@@ -18,9 +18,10 @@ https://github.com/chocoford/SwiftyDMG/releases/latest/download/appcast.xml
 The `$()` in the xcconfig URL prevents its slashes from being interpreted as a
 comment. Xcode expands the correct HTTPS URL into the app's Info.plist.
 
-The public key is intentionally blank until a release signing key is selected.
-Without it, the app does not start the updater. Store only the public key in this
-file; private keys and notarization credentials belong in the login Keychain.
+The public key is configured for the `com.chocoford.SwiftyDMG` Sparkle Keychain
+account. Its private key is stored in the login Keychain. Keep access to this
+key and back it up securely; it is used to sign future update archives. Store
+only the public key in the repository.
 
 ## Prepare release assets
 
@@ -28,9 +29,10 @@ The native Xcode project manages all application dependencies and embeds Sparkle
 Its tools are downloaded under
 `DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/` after dependency resolution.
 
-1. Use Sparkle's `generate_keys` tool to create or select an Ed25519 key account.
-   A dedicated account such as `com.chocoford.SwiftyDMG` is supported. Add the public
-   key to the xcconfig and preserve access to its private key in the login Keychain.
+1. Use the configured `com.chocoford.SwiftyDMG` Ed25519 key account. Sparkle's
+   `generate_keys --account com.chocoford.SwiftyDMG -p` prints its existing public
+   key when needed. Keep it consistent with the xcconfig and preserve access to
+   its private key in the login Keychain.
 2. Ensure the hdiutil dependency contains the macOS 27 process-exit fix and run
    the Xcode packaging regressions.
 3. Supply a Developer ID Application identity and a configured notarytool Keychain
@@ -49,11 +51,22 @@ for notarization, staples the accepted app and creates a signed appcast with a z
 archive. Local assets are written under `DerivedData/ReleaseAssets/v<version>/`.
 
 Review and test the archive and appcast before attaching both to the corresponding
-GitHub Release. The script prepares local assets and does not publish them.
+GitHub Release. For example, a draft `v2.0.0` release should contain these assets:
+
+- `SwiftyDMG-2.0.0.zip`
+- `appcast.xml`
+
+Upload both as release attachments, then publish the release. Keep the feed's
+filename exactly `appcast.xml`. Every new latest stable release needs that asset:
+the configured `releases/latest/download/appcast.xml` URL always resolves through
+the latest release. The appcast's archive URL points to the specific version's
+ZIP asset. These files are release attachments, not repository source files.
+The script prepares local assets and does not publish them.
 
 Release signing, notarization, Finder interaction and actual update installation
-remain to be verified before public distribution. No release keys or GitHub assets
-have been created during development.
+remain to be verified before public distribution. The local Sparkle signing key
+has been created and its public key is configured. This setup does not publish
+GitHub release assets.
 
 References: [Sparkle setup](https://sparkle-project.org/documentation/),
 [programmatic setup](https://sparkle-project.org/documentation/programmatic-setup/),

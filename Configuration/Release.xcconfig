@@ -18,5 +18,5 @@ INFOPLIST_PREPROCESSOR_DEFINITIONS = $(inherited) $(SWIFTYDMG_WORKSPACE_SAVING)
 
 // $() prevents xcconfig from interpreting the HTTPS slashes as a comment.
 SPARKLE_FEED_URL = https:/$()/github.com/chocoford/SwiftyDMG/releases/latest/download/appcast.xml
-// Add only the public Ed25519 key when configuring the first signed release.
-SPARKLE_PUBLIC_ED_KEY =
+// Public key for the com.chocoford.SwiftyDMG Sparkle Keychain account.
+SPARKLE_PUBLIC_ED_KEY = 6BEObq2BfBljGUIGkuYkzgwvnqozq11NV9/MHr5ijoY=

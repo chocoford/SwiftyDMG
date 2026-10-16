@@ -156,8 +156,9 @@ Finder does not show it. The service opens a selected App for settings review.
 ## Updates and distribution
 
 `Configuration/Release.xcconfig` supplies the version, numeric build, GitHub Releases
-feed and Sparkle public key. The public key is blank during development, so the
-updater remains inactive. See [release instructions](Docs/Release.md).
+feed and Sparkle public key. The public key is configured for the
+`com.chocoford.SwiftyDMG` Keychain account. Publish `appcast.xml` and the update ZIP
+as GitHub Release assets to make updates available. See [release instructions](Docs/Release.md).
 
 App Store sandboxing is disabled because the packaging engine needs disk-image
 and mount access. Hardened Runtime is enabled, with library validation disabled
