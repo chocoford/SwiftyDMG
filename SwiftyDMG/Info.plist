@@ -36,7 +36,10 @@
 	<string>Copyright © Chocoford. MIT License.</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
+		<!-- Keep directive comment pairs intact: Xcode also reads this before preprocessing. -->
+<!--
 #if SWIFTYDMG_WORKSPACE_SAVING
+-->
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>SwiftyDMG Workspace</string>
@@ -49,7 +52,9 @@
 				<string>com.chocoford.swiftydmg.workspace</string>
 			</array>
 		</dict>
+<!--
 #endif
+-->
 		<dict>
 			<key>CFBundleTypeName</key>
 			<string>macOS Application</string>
@@ -91,7 +96,9 @@
 			</dict>
 		</dict>
 	</array>
+<!--
 #if SWIFTYDMG_WORKSPACE_SAVING
+-->
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -112,6 +119,8 @@
 			</dict>
 		</dict>
 	</array>
+<!--
 #endif
+-->
 </dict>
 </plist>
