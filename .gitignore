@@ -2,3 +2,11 @@
 DerivedData/
 xcuserdata/
 *.xcuserstate
+
+# Local design explorations and working notes.
+/Design/
+/Docs/
+
+# Python tooling caches.
+__pycache__/
+*.py[cod]
