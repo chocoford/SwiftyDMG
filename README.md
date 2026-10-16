@@ -41,7 +41,13 @@ The volume name controls the mounted disk's title; the output filename controls 
 
 Preview appearance changes the Finder window chrome and the **No Background** canvas. Background images keep their own colors when switching between light and dark appearances.
 
-To use the Finder service, install SwiftyDMG in Applications and launch it once. Enable **Create DMG with SwiftyDMG** in System Settings if it does not appear in Finder's Services menu.
+### Finder context menu
+
+1. Move `SwiftyDMG.app` to Applications and open it once.
+2. Select one `.app` in Finder, right-click it, and choose **Services → Create DMG with SwiftyDMG**.
+3. Review its packaging settings in SwiftyDMG, then create the disk image.
+
+If the service is missing, enable **Create DMG with SwiftyDMG** in **System Settings → Keyboard → Keyboard Shortcuts → Services**. The service is provided by the app and updates along with it.
 
 ## Contributing
 
