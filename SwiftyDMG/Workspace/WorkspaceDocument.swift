@@ -7,14 +7,6 @@ extension UTType {
     static let swiftyDMGWorkspace = UTType(exportedAs: "com.chocoford.swiftydmg.workspace", conformingTo: .json)
 }
 
-/// Durable settings only. Build progress and logs belong to the open window.
-struct WorkspaceState: Codable, Equatable, Sendable {
-    var sourceURL: URL?
-    var outputURL: URL?
-    var usesAutomaticOutputName = true
-    var options = PackagingOptions()
-}
-
 struct WorkspaceDocument: FileDocument, Sendable {
     static var readableContentTypes: [UTType] { [.swiftyDMGWorkspace] }
     var workspace: WorkspaceState
@@ -87,48 +79,5 @@ private struct WorkspaceArchive: Codable {
         guard let data = bookmarks[key] else { return fallback }
         var stale = false
         return (try? URL(resolvingBookmarkData: data, options: [.withoutUI, .withoutMounting], relativeTo: nil, bookmarkDataIsStale: &stale)) ?? fallback
-    }
-}
-
-/// Each document owns its model; changes flow through the native document binding.
-struct WorkspaceDocumentView: View {
-    @Environment(\.newDocument) private var newDocument
-    @Binding var document: WorkspaceDocument
-    let fileURL: URL?
-    let delegate: ApplicationDelegate
-    @State private var model: PackagingModel
-
-    init(document: Binding<WorkspaceDocument>, fileURL: URL?, delegate: ApplicationDelegate) {
-        _document = document
-        self.fileURL = fileURL
-        self.delegate = delegate
-        _model = State(initialValue: PackagingModel(workspace: document.wrappedValue.workspace))
-    }
-
-    var body: some View {
-        ContentView(model: model, delegate: delegate, documentTitle: fileURL?.deletingPathExtension().lastPathComponent)
-            .focusedSceneValue(model)
-            .onAppear(perform: connectDocument)
-            .onDisappear { model.onWorkspaceChange = nil }
-            .onChange(of: document.workspace) { _, workspace in
-                if model.workspace != workspace { model.restoreWorkspace(workspace) }
-            }
-            .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
-                model.refreshAutomaticOutputName()
-            }
-    }
-
-    private func connectDocument() {
-        let binding = $document
-        model.onWorkspaceChange = { workspace in
-            if binding.wrappedValue.workspace != workspace {
-                binding.wrappedValue.workspace = workspace
-            }
-        }
-        if document.workspace != model.workspace { document.workspace = model.workspace }
-        let newDocumentAction = newDocument
-        delegate.connectWorkspaceCreation { workspace in
-            newDocumentAction(WorkspaceDocument(workspace: workspace))
-        }
     }
 }

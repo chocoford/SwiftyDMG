@@ -1,13 +1,6 @@
 import AppKit
 import SwiftUI
 
-enum InspectorTab: String, CaseIterable, Identifiable {
-    case settings, activity
-    var id: Self { self }
-    var title: LocalizedStringKey { self == .settings ? .localizable(.inspectorTabSettings) : .localizable(.inspectorTabBuild) }
-    var symbol: String { self == .settings ? "slider.horizontal.3" : "list.bullet.rectangle" }
-}
-
 private enum WindowPresentation {
     case welcome, hidingWelcome, resizing, loadingEditor, editor
 
@@ -21,13 +14,13 @@ private enum WindowPresentation {
 struct ContentView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable var model: PackagingModel
-    let delegate: ApplicationDelegate
+    let delegate: AppDelegate
     let documentTitle: String?
     @State private var presentation = WindowPresentation.welcome
     @State private var inspectorTab = InspectorTab.settings
     @State private var inspectorPresented = true
 
-    init(model: PackagingModel, delegate: ApplicationDelegate, documentTitle: String? = nil) {
+    init(model: PackagingModel, delegate: AppDelegate, documentTitle: String? = nil) {
         self.model = model
         self.delegate = delegate
         self.documentTitle = documentTitle
@@ -37,7 +30,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if presentation.presentsEditor {
-                PackagingWorkspace(model: model, inspectorTab: $inspectorTab, inspectorPresented: $inspectorPresented)
+                WorkspaceView(model: model, inspectorTab: $inspectorTab, inspectorPresented: $inspectorPresented)
                     .transition(.identity)
                     .task { revealEditor() }
             } else if presentation.presentsWelcome {
@@ -171,94 +164,7 @@ struct ContentView: View {
     }
 }
 
-private struct PackagingWorkspace: View {
-    @Bindable var model: PackagingModel
-    @Binding var inspectorTab: InspectorTab
-    @Binding var inspectorPresented: Bool
-    @State private var columnVisibility = NavigationSplitViewVisibility.all
-    @State private var selection: WorkspaceItem? = .app
-
-    var body: some View {
-        workspaceContent
-        .inspector(isPresented: $inspectorPresented) {
-            VStack(spacing: 0) {
-                InspectorTabPicker(selection: $inspectorTab)
-                    .padding(12)
-                Divider()
-                if inspectorTab == .settings {
-                    PackagingSettingsView(model: model, selection: selection)
-                } else {
-                    BuildInspector(model: model)
-                }
-            }
-            .inspectorColumnWidth(min: 300, ideal: 320, max: 380)
-        }
-        .onChange(of: selection) { _, selected in
-            if selected != nil {
-                inspectorTab = .settings
-                inspectorPresented = true
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var workspaceContent: some View {
-        #if SWIFTYDMG_SIDEBAR
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            WorkspaceSidebar(model: model, selection: $selection)
-                .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 300)
-        } detail: {
-            PreviewCanvas(options: $model.options, sourceURL: model.sourceURL, isBuilding: model.isBuilding)
-        }
-        #else
-        PreviewCanvas(options: $model.options, sourceURL: model.sourceURL, isBuilding: model.isBuilding)
-        #endif
-    }
-}
-
-private struct InspectorTabPicker: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Binding var selection: InspectorTab
-    @Namespace private var selectionAnimation
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(InspectorTab.allCases) { tab in
-                Button {
-                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
-                        selection = tab
-                    }
-                } label: {
-                    Label(tab.title, systemImage: tab.symbol)
-                        .font(.callout.weight(.medium))
-                        .foregroundStyle(selection == tab ? Color.primary : Color.secondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 8)
-                        .background {
-                            if selection == tab {
-                                Capsule()
-                                    .fill(Color(nsColor: .controlBackgroundColor))
-                                    .shadow(color: .black.opacity(0.08), radius: 2, y: 1)
-                                    .matchedGeometryEffect(id: "inspectorSelection", in: selectionAnimation)
-                            }
-                        }
-                        .contentShape(Capsule())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(tab.title)
-                .accessibilityAddTraits(selection == tab ? .isSelected : [])
-                .accessibilityIdentifier("inspectorTab_\(tab.rawValue)")
-            }
-        }
-        .padding(3)
-        .background(.quaternary.opacity(0.5), in: Capsule())
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(.localizable(.toolbarInspector))
-    }
-}
-
 #Preview("Open App") {
-    ContentView(model: PackagingModel(), delegate: ApplicationDelegate())
+    ContentView(model: PackagingModel(), delegate: AppDelegate())
         .frame(width: 400, height: 300)
 }

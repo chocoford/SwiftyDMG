@@ -10,9 +10,21 @@ app target; external dependencies are configured in the project's Package Depend
 
 ```text
 SwiftyDMG.xcodeproj/      Native app project and shared scheme
-SwiftyDMG/               SwiftUI app, settings, services and packaging code
+SwiftyDMG/
+  SwiftyDMGApp.swift     App entry and scene wiring
+  AppDelegate.swift     Native app lifecycle and Finder services
+  ContentView.swift     Root window presentation and transitions
+  Workspace/            Workspace views, state, documents, commands and window sizing
+  Inspector/            Settings, build logs and inspector controls
+  Packaging/            Build model, requests, disk-image engine and process execution
+  Preview/              Finder layout preview and canvas controls
+  Updates/              Sparkle controller and update settings
+  Resources/            DMG background
+AppIcon.icon/            Icon Composer app icon
+Assets.xcassets/         Asset catalog
+Localizable.xcstrings    Manually maintained string catalog
 SwiftyDMGTests/          Xcode packaging regression tests
-Configuration/           App version and Sparkle update settings
+Configuration/           Info.plist, entitlements, version and Sparkle update settings
 Scripts/                 Native release preparation
 Docs/                    Release instructions
 ```
@@ -22,7 +34,7 @@ The project directly references these sibling packages for local development:
 as a remote package dependency. AppDMG performs disk-image creation and Finder
 layout decoration; hdiutil and DSStoreKit support those operations.
 
-English is the source language. `SwiftyDMG/Localizable.xcstrings` is maintained
+English is the source language. `Localizable.xcstrings` is maintained
 manually with lowerCamelCase semantic keys and complete English source values.
 The `XCStringsToolPlugin` build tool generates typed accessors for both the app
 and the standalone packaging test target. Generated Swift files stay in DerivedData.

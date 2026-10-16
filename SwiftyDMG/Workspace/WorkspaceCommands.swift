@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WorkspaceCommands: Commands {
-    let delegate: ApplicationDelegate
+    let delegate: AppDelegate
     @FocusedValue(PackagingModel.self) private var model
 
     var body: some Commands {

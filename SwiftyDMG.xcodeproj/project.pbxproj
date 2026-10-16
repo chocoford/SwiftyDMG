@@ -30,7 +30,7 @@
 		B20000000000000000000023 /* SwiftyDMG/Packaging/Packager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */; };
 		C30000000000000000000101 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000001 /* WelcomeView.swift */; };
 		C30000000000000000000102 /* WindowSizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000002 /* WindowSizing.swift */; };
-		C30000000000000000000103 /* PackagingInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000003 /* PackagingInspector.swift */; };
+		C30000000000000000000103 /* PackagingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000003 /* PackagingSettingsView.swift */; };
 		C30000000000000000000104 /* BuildInspector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000004 /* BuildInspector.swift */; };
 		C30000000000000000000105 /* InspectorNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C30000000000000000000005 /* InspectorNumberField.swift */; };
 		D40000000000000000000101 /* WorkspaceDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000001 /* WorkspaceDocument.swift */; };
@@ -38,6 +38,20 @@
 		D40000000000000000000103 /* WorkspaceSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40000000000000000000003 /* WorkspaceSidebar.swift */; };
 		E50000000000000000000101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* Localizable.xcstrings */; };
 		E60000000000000000000101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E50000000000000000000001 /* Localizable.xcstrings */; };
+		F70000000000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000001 /* AppDelegate.swift */; };
+		F70000000000000000000004 /* AdditionalFilesSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000003 /* AdditionalFilesSettingsSection.swift */; };
+		F70000000000000000000006 /* DiskIconSettingsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000005 /* DiskIconSettingsRow.swift */; };
+		F70000000000000000000008 /* InspectorFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000007 /* InspectorFields.swift */; };
+		F7000000000000000000000A /* InspectorNumberControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000009 /* InspectorNumberControl.swift */; };
+		F7000000000000000000000C /* InspectorTabPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7000000000000000000000B /* InspectorTabPicker.swift */; };
+		F7000000000000000000000E /* OutputSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7000000000000000000000D /* OutputSettingsSection.swift */; };
+		F70000000000000000000010 /* BuildLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7000000000000000000000F /* BuildLog.swift */; };
+		F70000000000000000000012 /* PreviewCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000011 /* PreviewCanvas.swift */; };
+		F70000000000000000000014 /* UpdateSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000013 /* UpdateSettingsView.swift */; };
+		F70000000000000000000016 /* SessionWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000015 /* SessionWorkspaceView.swift */; };
+		F70000000000000000000018 /* WorkspaceDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000017 /* WorkspaceDocumentView.swift */; };
+		F7000000000000000000001A /* WorkspaceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70000000000000000000019 /* WorkspaceState.swift */; };
+		F7000000000000000000001C /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7000000000000000000001B /* WorkspaceView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,20 +69,34 @@
 		39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMGApp.swift; sourceTree = "<group>"; };
 		39A9DF10307FE726004704F3 /* UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateController.swift; sourceTree = "<group>"; };
 		39A9DF583080CA5E004704F3 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
-		A10000000000000000000041 /* Configuration/Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Release.xcconfig; sourceTree = "<group>"; };
+		A10000000000000000000041 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		B20000000000000000000002 /* SwiftyDMGTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftyDMGTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000000000000000000011 /* SwiftyDMG/Packaging/PackagingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/PackagingOptions.swift; sourceTree = SOURCE_ROOT; };
 		B20000000000000000000012 /* SwiftyDMG/Packaging/ProcessExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/ProcessExecutor.swift; sourceTree = SOURCE_ROOT; };
 		B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyDMG/Packaging/Packager.swift; sourceTree = SOURCE_ROOT; };
 		C30000000000000000000001 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		C30000000000000000000002 /* WindowSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSizing.swift; sourceTree = "<group>"; };
-		C30000000000000000000003 /* PackagingInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingInspector.swift; sourceTree = "<group>"; };
+		C30000000000000000000003 /* PackagingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackagingSettingsView.swift; sourceTree = "<group>"; };
 		C30000000000000000000004 /* BuildInspector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInspector.swift; sourceTree = "<group>"; };
 		C30000000000000000000005 /* InspectorNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorNumberField.swift; sourceTree = "<group>"; };
 		D40000000000000000000001 /* WorkspaceDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceDocument.swift; sourceTree = "<group>"; };
 		D40000000000000000000002 /* WorkspaceCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceCommands.swift; sourceTree = "<group>"; };
 		D40000000000000000000003 /* WorkspaceSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceSidebar.swift; sourceTree = "<group>"; };
 		E50000000000000000000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F70000000000000000000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F70000000000000000000003 /* AdditionalFilesSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalFilesSettingsSection.swift; sourceTree = "<group>"; };
+		F70000000000000000000005 /* DiskIconSettingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskIconSettingsRow.swift; sourceTree = "<group>"; };
+		F70000000000000000000007 /* InspectorFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorFields.swift; sourceTree = "<group>"; };
+		F70000000000000000000009 /* InspectorNumberControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorNumberControl.swift; sourceTree = "<group>"; };
+		F7000000000000000000000B /* InspectorTabPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InspectorTabPicker.swift; sourceTree = "<group>"; };
+		F7000000000000000000000D /* OutputSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputSettingsSection.swift; sourceTree = "<group>"; };
+		F7000000000000000000000F /* BuildLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildLog.swift; sourceTree = "<group>"; };
+		F70000000000000000000011 /* PreviewCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewCanvas.swift; sourceTree = "<group>"; };
+		F70000000000000000000013 /* UpdateSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateSettingsView.swift; sourceTree = "<group>"; };
+		F70000000000000000000015 /* SessionWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionWorkspaceView.swift; sourceTree = "<group>"; };
+		F70000000000000000000017 /* WorkspaceDocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceDocumentView.swift; sourceTree = "<group>"; };
+		F70000000000000000000019 /* WorkspaceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceState.swift; sourceTree = "<group>"; };
+		F7000000000000000000001B /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -104,8 +132,11 @@
 			isa = PBXGroup;
 			children = (
 				39A9DF11307FE726004704F3 /* SwiftyDMG */,
+				39A9DF583080CA5E004704F3 /* AppIcon.icon */,
+				E50000000000000000000001 /* Localizable.xcstrings */,
+				39A9DF09307FE726004704F3 /* Assets.xcassets */,
 				000000000000000000000020 /* Products */,
-				A10000000000000000000041 /* Configuration/Release.xcconfig */,
+				F70000000000000000000021 /* Configuration */,
 				B20000000000000000000003 /* SwiftyDMGTests */,
 				B20000000000000000000008 /* Packaging Test Sources */,
 			);
@@ -123,7 +154,9 @@
 		39A9DF06307FE726004704F3 /* Packaging */ = {
 			isa = PBXGroup;
 			children = (
+				F7000000000000000000000F /* BuildLog.swift */,
 				39A9DF03307FE726004704F3 /* Packager.swift */,
+				39A9DF0E307FE726004704F3 /* PackagingModel.swift */,
 				39A9DF04307FE726004704F3 /* PackagingOptions.swift */,
 				39A9DF05307FE726004704F3 /* ProcessExecutor.swift */,
 			);
@@ -141,26 +174,15 @@
 		39A9DF11307FE726004704F3 /* SwiftyDMG */ = {
 			isa = PBXGroup;
 			children = (
-				39A9DF0C307FE726004704F3 /* Info.plist */,
-				E50000000000000000000001 /* Localizable.xcstrings */,
 				39A9DF0F307FE726004704F3 /* SwiftyDMGApp.swift */,
+				F70000000000000000000001 /* AppDelegate.swift */,
 				39A9DF0A307FE726004704F3 /* ContentView.swift */,
-				D40000000000000000000001 /* WorkspaceDocument.swift */,
-				D40000000000000000000002 /* WorkspaceCommands.swift */,
-				D40000000000000000000003 /* WorkspaceSidebar.swift */,
-				C30000000000000000000001 /* WelcomeView.swift */,
-				C30000000000000000000002 /* WindowSizing.swift */,
-				C30000000000000000000003 /* PackagingInspector.swift */,
-				C30000000000000000000005 /* InspectorNumberField.swift */,
-				C30000000000000000000004 /* BuildInspector.swift */,
-				39A9DF0D307FE726004704F3 /* LayoutPreview.swift */,
-				39A9DF0E307FE726004704F3 /* PackagingModel.swift */,
-				39A9DF10307FE726004704F3 /* UpdateController.swift */,
+				F7000000000000000000001D /* Workspace */,
+				F7000000000000000000001E /* Inspector */,
 				39A9DF06307FE726004704F3 /* Packaging */,
+				F7000000000000000000001F /* Preview */,
+				F70000000000000000000020 /* Updates */,
 				39A9DF08307FE726004704F3 /* Resources */,
-				39A9DF09307FE726004704F3 /* Assets.xcassets */,
-				39A9DF0B307FE726004704F3 /* Debug.entitlements */,
-				39A9DF583080CA5E004704F3 /* AppIcon.icon */,
 			);
 			path = SwiftyDMG;
 			sourceTree = "<group>";
@@ -173,6 +195,66 @@
 				B20000000000000000000013 /* SwiftyDMG/Packaging/Packager.swift */,
 			);
 			name = "Packaging Test Sources";
+			sourceTree = "<group>";
+		};
+		F7000000000000000000001D /* Workspace */ = {
+			isa = PBXGroup;
+			children = (
+				F70000000000000000000015 /* SessionWorkspaceView.swift */,
+				C30000000000000000000001 /* WelcomeView.swift */,
+				C30000000000000000000002 /* WindowSizing.swift */,
+				D40000000000000000000002 /* WorkspaceCommands.swift */,
+				D40000000000000000000001 /* WorkspaceDocument.swift */,
+				F70000000000000000000017 /* WorkspaceDocumentView.swift */,
+				D40000000000000000000003 /* WorkspaceSidebar.swift */,
+				F70000000000000000000019 /* WorkspaceState.swift */,
+				F7000000000000000000001B /* WorkspaceView.swift */,
+			);
+			path = Workspace;
+			sourceTree = "<group>";
+		};
+		F7000000000000000000001E /* Inspector */ = {
+			isa = PBXGroup;
+			children = (
+				F70000000000000000000003 /* AdditionalFilesSettingsSection.swift */,
+				C30000000000000000000004 /* BuildInspector.swift */,
+				F70000000000000000000005 /* DiskIconSettingsRow.swift */,
+				F70000000000000000000007 /* InspectorFields.swift */,
+				F70000000000000000000009 /* InspectorNumberControl.swift */,
+				C30000000000000000000005 /* InspectorNumberField.swift */,
+				F7000000000000000000000B /* InspectorTabPicker.swift */,
+				F7000000000000000000000D /* OutputSettingsSection.swift */,
+				C30000000000000000000003 /* PackagingSettingsView.swift */,
+			);
+			path = Inspector;
+			sourceTree = "<group>";
+		};
+		F7000000000000000000001F /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				39A9DF0D307FE726004704F3 /* LayoutPreview.swift */,
+				F70000000000000000000011 /* PreviewCanvas.swift */,
+			);
+			path = Preview;
+			sourceTree = "<group>";
+		};
+		F70000000000000000000020 /* Updates */ = {
+			isa = PBXGroup;
+			children = (
+				39A9DF10307FE726004704F3 /* UpdateController.swift */,
+				F70000000000000000000013 /* UpdateSettingsView.swift */,
+			);
+			path = Updates;
+			sourceTree = "<group>";
+		};
+		F70000000000000000000021 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000041 /* Release.xcconfig */,
+				39A9DF0C307FE726004704F3 /* Info.plist */,
+				39A9DF0B307FE726004704F3 /* Debug.entitlements */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -321,13 +403,27 @@
 				D40000000000000000000103 /* WorkspaceSidebar.swift in Sources */,
 				C30000000000000000000101 /* WelcomeView.swift in Sources */,
 				C30000000000000000000102 /* WindowSizing.swift in Sources */,
-				C30000000000000000000103 /* PackagingInspector.swift in Sources */,
+				C30000000000000000000103 /* PackagingSettingsView.swift in Sources */,
 				C30000000000000000000105 /* InspectorNumberField.swift in Sources */,
 				C30000000000000000000104 /* BuildInspector.swift in Sources */,
 				39A9DF16307FE726004704F3 /* LayoutPreview.swift in Sources */,
 				39A9DF17307FE726004704F3 /* PackagingModel.swift in Sources */,
 				39A9DF18307FE726004704F3 /* SwiftyDMGApp.swift in Sources */,
 				39A9DF19307FE726004704F3 /* UpdateController.swift in Sources */,
+				F70000000000000000000002 /* AppDelegate.swift in Sources */,
+				F70000000000000000000004 /* AdditionalFilesSettingsSection.swift in Sources */,
+				F70000000000000000000006 /* DiskIconSettingsRow.swift in Sources */,
+				F70000000000000000000008 /* InspectorFields.swift in Sources */,
+				F7000000000000000000000A /* InspectorNumberControl.swift in Sources */,
+				F7000000000000000000000C /* InspectorTabPicker.swift in Sources */,
+				F7000000000000000000000E /* OutputSettingsSection.swift in Sources */,
+				F70000000000000000000010 /* BuildLog.swift in Sources */,
+				F70000000000000000000012 /* PreviewCanvas.swift in Sources */,
+				F70000000000000000000014 /* UpdateSettingsView.swift in Sources */,
+				F70000000000000000000016 /* SessionWorkspaceView.swift in Sources */,
+				F70000000000000000000018 /* WorkspaceDocumentView.swift in Sources */,
+				F7000000000000000000001A /* WorkspaceState.swift in Sources */,
+				F7000000000000000000001C /* WorkspaceView.swift in Sources */,
 			);
 		};
 		B20000000000000000000004 /* Sources */ = {
@@ -476,18 +572,18 @@
 		};
 		000000000000000111000000 /* Debug configuration for PBXNativeTarget "SwiftyDMG" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A10000000000000000000041 /* Configuration/Release.xcconfig */;
+			baseConfigurationReference = A10000000000000000000041 /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = SwiftyDMG/Debug.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Configuration/Debug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3XKM749Y3L;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = SwiftyDMG/Info.plist;
+				INFOPLIST_FILE = Configuration/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -506,7 +602,7 @@
 		};
 		000000000000000112000000 /* Release configuration for PBXNativeTarget "SwiftyDMG" */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A10000000000000000000041 /* Configuration/Release.xcconfig */;
+			baseConfigurationReference = A10000000000000000000041 /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -516,7 +612,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = SwiftyDMG/Info.plist;
+				INFOPLIST_FILE = Configuration/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -632,14 +728,6 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A10000000000000000000032 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
-			requirement = {
-				kind = exactVersion;
-				version = 2.10.0;
-			};
-		};
 		39D11DE23081F68F00519F04 /* XCRemoteSwiftPackageReference "xcstrings-tool-plugin" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/liamnichols/xcstrings-tool-plugin";
@@ -648,9 +736,22 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		A10000000000000000000032 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.10.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		39D11DE63081F6A700519F04 /* XCStringsToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 39D11DE23081F68F00519F04 /* XCRemoteSwiftPackageReference "xcstrings-tool-plugin" */;
+			productName = "plugin:XCStringsToolPlugin";
+		};
 		A10000000000000000000012 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A10000000000000000000032 /* XCRemoteSwiftPackageReference "Sparkle" */;
@@ -667,11 +768,6 @@
 		B10000000000000000000023 /* DSStoreKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DSStoreKit;
-		};
-		39D11DE63081F6A700519F04 /* XCStringsToolPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 39D11DE23081F68F00519F04 /* XCRemoteSwiftPackageReference "xcstrings-tool-plugin" */;
-			productName = "plugin:XCStringsToolPlugin";
 		};
 		E60000000000000000000103 /* XCStringsToolPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
