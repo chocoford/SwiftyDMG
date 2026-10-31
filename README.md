@@ -6,6 +6,8 @@
 
 Drop in an `.app`, customize its disk image, and create an installer with an Applications shortcut, your own background, and a matching disk icon. SwiftyDMG brings the packaging workflow into a SwiftUI app with a live preview and detailed build logs.
 
+![SwiftyDMG overview showing the layout preview and settings inspector](.github/assets/Overview.png)
+
 ## Features
 
 - **A native workspace.** Start with a compact drop window that expands into an editor, with settings in the inspector and independent packaging windows.
