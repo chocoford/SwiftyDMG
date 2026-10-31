@@ -45,6 +45,10 @@ Preview appearance changes the Finder window chrome and the **No Background** ca
 
 ### Finder context menu
 
+Package any macOS app directly from Finder: create a DMG with default settings, or open the editor to customize it first.
+
+![Configure or create a DMG for any app from Finder](.github/assets/FinderServices.png)
+
 1. Move `SwiftyDMG.app` to Applications and open it once.
 2. Select one `.app` in Finder and right-click it.
 3. Choose **Services → Create DMG with SwiftyDMG** to start packaging immediately with default settings. The DMG is saved beside the selected app with its name and version. A floating progress panel shows the percentage and current step while Finder keeps focus.
